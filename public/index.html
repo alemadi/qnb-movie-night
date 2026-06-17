@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0e1116" />
+  <title>Movie Night — Check In</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">🎬</div>
+      <div>
+        <h1>QNB Movie Night</h1>
+        <p>Guest check-in</p>
+      </div>
+    </div>
+
+    <!-- Step 1: enter mobile number -->
+    <div class="card" id="lookupCard">
+      <h2>Welcome! 👋</h2>
+      <p class="muted" style="margin-top:-6px">Enter the mobile number you reserved with to find your booking.</p>
+      <div id="lookupMsg" class="msg"></div>
+      <form id="lookupForm">
+        <div class="field">
+          <label for="mobile">Mobile number</label>
+          <input type="tel" id="mobile" name="mobile" inputmode="tel"
+                 autocomplete="tel" placeholder="e.g. +974 5512 3456" required />
+        </div>
+        <button type="submit" id="lookupBtn">Find my booking</button>
+      </form>
+    </div>
+
+    <!-- Step 2: confirm details -->
+    <div class="card detail hidden" id="detailCard">
+      <div id="detailMsg" class="msg"></div>
+      <div id="alreadyBanner" class="hidden center">
+        <div class="big-check">✅</div>
+        <h2 style="margin-bottom:4px">You're already checked in</h2>
+      </div>
+      <p class="name" id="gName">—</p>
+      <p class="meta" id="gMobile">—</p>
+      <div>
+        <span class="seats-badge" id="gSeats">🎟️ — seats</span>
+      </div>
+      <p class="meta" style="margin-top:14px">
+        Status: <span class="status-pill" id="gStatus">—</span>
+      </p>
+      <p class="meta hidden" id="gTimeRow">Checked in at: <span id="gTime"></span></p>
+
+      <div style="margin-top:18px">
+        <button id="confirmBtn">Confirm Check-In</button>
+        <button class="secondary" id="backBtn" style="margin-top:10px">Not you? Search again</button>
+      </div>
+    </div>
+
+    <p class="footer-note">Having trouble? Please see a staff member at the entrance.</p>
+  </div>
+
+  <script src="/js/checkin.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0e1116" />
+  <title>Movie Night — Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <!-- Login view -->
+  <div class="wrap" id="loginView">
+    <div class="brand">
+      <div class="logo">🔐</div>
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>QNB Movie Night</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Sign in</h2>
+      <div id="loginMsg" class="msg"></div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="password">Admin password</label>
+          <input type="password" id="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" id="loginBtn">Log in</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard view -->
+  <div class="wrap wrap-wide hidden" id="dashView">
+    <div class="topbar">
+      <div class="brand" style="margin-bottom:0">
+        <div class="logo">🎬</div>
+        <div>
+          <h1>Admin Dashboard</h1>
+          <p>QNB Movie Night</p>
+        </div>
+      </div>
+      <button class="secondary small" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="guests">Guests</button>
+      <button class="tab" data-tab="add">Add / Import</button>
+      <button class="tab" data-tab="qr">QR Code</button>
+    </div>
+
+    <!-- Stats (always visible) -->
+    <div class="stats" id="stats">
+      <div class="stat"><div class="num" id="stTotalGuests">—</div><div class="lbl">Registered guests</div></div>
+      <div class="stat"><div class="num" id="stTotalSeats">—</div><div class="lbl">Seats reserved</div></div>
+      <div class="stat accent"><div class="num" id="stChecked">—</div><div class="lbl">Checked-in guests</div></div>
+      <div class="stat"><div class="num" id="stRemaining">—</div><div class="lbl">Remaining guests</div></div>
+    </div>
+
+    <!-- Guests tab -->
+    <section data-panel="guests">
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" id="search" placeholder="Search by name or mobile…" />
+          <button class="secondary small" id="refreshBtn">Refresh</button>
+        </div>
+        <div id="guestsMsg" class="msg"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th><th>Mobile</th><th>Seats</th><th>Status</th><th>Checked in</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="guestsBody">
+              <tr><td colspan="6" class="muted center">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add / Import tab -->
+    <section data-panel="add" class="hidden">
+      <div class="card">
+        <h2>Add a single guest</h2>
+        <div id="addMsg" class="msg"></div>
+        <form id="addForm">
+          <div class="field">
+            <label for="aName">Full name</label>
+            <input type="text" id="aName" required />
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="aMobile">Mobile number</label>
+              <input type="tel" id="aMobile" required />
+            </div>
+            <div class="field">
+              <label for="aSeats">Seats / party</label>
+              <input type="number" id="aSeats" min="1" value="1" />
+            </div>
+          </div>
+          <button type="submit">Add guest</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Bulk import</h2>
+        <p class="muted" style="margin-top:-6px">
+          Upload a CSV or paste rows. Format: <code>name, mobile, seats</code>
+          (a header row is optional). Existing mobiles are updated, not duplicated.
+        </p>
+        <div id="importMsg" class="msg"></div>
+        <div class="field">
+          <label for="csvFile">Upload CSV file</label>
+          <input type="file" id="csvFile" accept=".csv,text/csv,text/plain" />
+        </div>
+        <div class="field">
+          <label for="pasteText">…or paste here</label>
+          <textarea id="pasteText" placeholder="Full Name, Mobile, Seats
+Sara Ahmed, +97455123456, 2
+Khalid Al-Thani, +97466778899, 4"></textarea>
+        </div>
+        <button id="importBtn">Import guests</button>
+      </div>
+    </section>
+
+    <!-- QR tab -->
+    <section data-panel="qr" class="hidden">
+      <div class="card qr-box" id="printArea">
+        <h2>Scan to check in</h2>
+        <p class="muted" style="margin-top:-6px">Display or print this at the venue entrance.</p>
+        <img id="qrImg" alt="Check-in QR code" />
+        <div class="qr-url" id="qrUrl">—</div>
+      </div>
+      <button class="secondary" id="printBtn">🖨️ Print QR poster</button>
+    </section>
+
+    <p class="footer-note">QNB Movie Night check-in · admin</p>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>
