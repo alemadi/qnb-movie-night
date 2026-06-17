@@ -8,6 +8,12 @@ the guest list and watch live attendance from a password-protected dashboard.
 Built to be tiny and self-contained: **Node.js + Express + SQLite** with a plain
 HTML/CSS/JS frontend (no build step).
 
+> **Two editions available.** This is the **Server** edition (Express + SQLite).
+> A second, **Lite / Edge** edition lives in [`lite/`](./lite) — zero runtime
+> dependencies and stateless auth, for instant deploy anywhere. See
+> [`COMPARISON.md`](./COMPARISON.md) for a tested head-to-head and which to use
+> for which job.
+
 ---
 
 ## ✨ Features
