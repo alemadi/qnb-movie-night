@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#3A0D16" />
+<title>QNB Movie Night — Check-in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --maroon-1: #5E1626;
+    --maroon-2: #3A0D16;
+    --cream: #F8F3EB;
+    --ink: #2A1B1F;
+    --muted: #8A7568;
+    --green: #2FAE62;
+    --amber: #E0922B;
+    --red: #D24B3E;
+    --gold: #D8B25A;
+    --theme: var(--green);
+    --theme-soft: rgba(47,174,98,.14);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(120% 80% at 50% -10%, #6d1a2d 0%, var(--maroon-1) 38%, var(--maroon-2) 100%);
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  /* subtle film-grain / vignette */
+  body::after {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(140% 110% at 50% 40%, transparent 55%, rgba(0,0,0,.34) 100%);
+    z-index: 5;
+  }
+
+  .stage { width: 100%; max-width: 420px; position: relative; z-index: 2; }
+
+  /* ---------- Ticket card ---------- */
+  .ticket {
+    position: relative;
+    background: var(--cream);
+    border-radius: 22px;
+    box-shadow: 0 26px 60px -20px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.4) inset;
+    padding: 34px 26px 26px;
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+    animation: cardIn .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes cardIn { to { opacity: 1; transform: none; } }
+
+  /* perforation notches on the tear line */
+  .notch {
+    position: absolute; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--maroon-2);
+    top: var(--tear, 196px); transform: translateY(-50%);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.4);
+  }
+  .notch.left { left: -13px; }
+  .notch.right { right: -13px; }
+  .tear {
+    position: absolute; left: 18px; right: 18px; top: var(--tear, 196px);
+    border-top: 2px dashed rgba(94,22,38,.32);
+  }
+
+  /* header strip */
+  .brand { display: flex; align-items: center; gap: 9px; justify-content: center; }
+  .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(216,178,90,.2); }
+  .brand .label {
+    font-family: "Inter"; font-weight: 700; letter-spacing: .18em;
+    font-size: 11px; text-transform: uppercase; color: var(--maroon-1);
+  }
+  .movie {
+    text-align: center; margin: 4px 0 0;
+    font-family: "Fraunces"; font-weight: 600; font-size: 15px; color: var(--muted);
+  }
+
+  /* ---------- Top zone: status emblem ---------- */
+  .emblem-wrap { display: flex; justify-content: center; margin: 22px 0 6px; height: 132px; align-items: center; position: relative; }
+
+  /* scanning state */
+  .scanning { text-align: center; }
+  .scan-box {
+    width: 96px; height: 96px; margin: 0 auto 12px; border-radius: 18px;
+    background: repeating-linear-gradient(0deg, rgba(94,22,38,.10) 0 7px, transparent 7px 14px);
+    border: 2px solid rgba(94,22,38,.18); position: relative; overflow: hidden;
+  }
+  .scan-line {
+    position: absolute; left: 6px; right: 6px; height: 3px; border-radius: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    box-shadow: 0 0 12px var(--gold);
+    top: 8px; animation: sweep 1s ease-in-out infinite;
+  }
+  @keyframes sweep { 0%{top:8px} 50%{top:84px} 100%{top:8px} }
+  .scan-text { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+  .scan-text::after { content: ""; animation: dots 1.2s steps(4,end) infinite; }
+  @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} 100%{content:""} }
+
+  /* result emblem (circle + icon) */
+  .emblem {
+    width: 116px; height: 116px; border-radius: 50%;
+    display: none; align-items: center; justify-content: center; position: relative;
+    background: var(--theme-soft);
+    box-shadow: 0 0 0 0 var(--theme);
+  }
+  .emblem.show { display: flex; animation: emblemPop .6s cubic-bezier(.2,1.3,.4,1) both; }
+  @keyframes emblemPop { 0%{ transform: scale(.4); opacity:0 } 60%{ transform: scale(1.06) } 100%{ transform: scale(1); opacity:1 } }
+  .emblem svg { width: 64px; height: 64px; overflow: visible; }
+  .emblem .glyph {
+    fill: none; stroke: var(--theme); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 120; stroke-dashoffset: 120;
+    animation: draw .55s .12s cubic-bezier(.6,.05,.2,1) forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .ring { position:absolute; inset:0; border-radius:50%; border:3px solid var(--theme); opacity:.0; }
+  .emblem.show .ring { animation: ring .7s .1s ease-out forwards; }
+  @keyframes ring { 0%{opacity:.5; transform:scale(.7)} 100%{opacity:0; transform:scale(1.35)} }
+
+  /* sparkles */
+  .spark { position:absolute; width:8px; height:8px; border-radius:2px; background: var(--gold); opacity:0; }
+  .emblem.show .spark { animation: spark .7s .18s ease-out forwards; }
+  @keyframes spark { 0%{ opacity:1; transform: translate(0,0) scale(.4) rotate(0) } 100%{ opacity:0; transform: translate(var(--dx), var(--dy)) scale(1) rotate(140deg) } }
+
+  /* ---------- Result text ---------- */
+  .result { text-align: center; }
+  .kicker {
+    font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--theme); opacity: 0; transform: translateY(6px);
+  }
+  .name {
+    font-family: "Fraunces"; font-weight: 600; line-height: 1.02;
+    font-size: clamp(34px, 12vw, 46px); margin: 6px 0 2px; color: var(--ink);
+    opacity: 0; transform: translateY(14px);
+  }
+  .subline { font-size: 14px; color: var(--muted); opacity: 0; transform: translateY(8px); min-height: 18px; }
+
+  .reveal .kicker { animation: rise .5s .05s cubic-bezier(.2,.8,.2,1) forwards; }
+  .reveal .name   { animation: rise .55s .14s cubic-bezier(.2,.8,.2,1) forwards; }
+  .reveal .subline{ animation: rise .5s .24s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* ---------- Detail chips (below tear) ---------- */
+  .chips { display: flex; gap: 12px; margin-top: 22px; }
+  .chip {
+    flex: 1; background: #fff; border: 1px solid rgba(94,22,38,.10);
+    border-radius: 14px; padding: 12px 12px 11px; text-align: center;
+    box-shadow: 0 6px 16px -12px rgba(0,0,0,.4);
+    opacity: 0; transform: translateY(10px) scale(.98);
+  }
+  .reveal .chip { animation: chipIn .5s cubic-bezier(.2,1,.3,1) forwards; }
+  .reveal .chip:nth-child(1) { animation-delay: .34s; }
+  .reveal .chip:nth-child(2) { animation-delay: .44s; }
+  @keyframes chipIn { to { opacity:1; transform:none; } }
+  .chip .cap { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .chip .val { font-family: "Fraunces"; font-weight: 600; font-size: 22px; color: var(--maroon-1); margin-top: 3px; line-height: 1; }
+  .chip.screen .val { color: var(--theme); }
+  .chip .val small { font-family:"Inter"; font-weight:600; font-size:12px; color: var(--muted); }
+
+  .footline {
+    text-align:center; margin-top: 20px; font-size: 12.5px; color: var(--muted);
+    opacity: 0;
+  }
+  .reveal .footline { animation: rise .5s .5s ease forwards; }
+  .footline b { color: var(--ink); font-weight: 600; }
+
+  /* big single-message states (already / not found) hide chips */
+  .ticket.solo .tear, .ticket.solo .notch { opacity: .5; }
+  .bigmsg {
+    margin-top: 20px; text-align:center; font-size: 15px; line-height:1.5; color: var(--ink);
+    opacity:0;
+  }
+  .reveal .bigmsg { animation: rise .5s .3s ease forwards; }
+  .bigmsg .accent { color: var(--theme); font-weight: 700; }
+
+  .hint { margin-top: 14px; text-align:center; font-size:12px; color: rgba(248,243,235,.6); position:relative; z-index:2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; transition: none !important; }
+    .ticket, .emblem, .kicker, .name, .subline, .chip, .footline, .bigmsg { opacity:1 !important; transform:none !important; }
+    .emblem .glyph { stroke-dashoffset: 0 !important; }
+    .scan-line { display:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="ticket" id="ticket">
+      <span class="notch left"></span><span class="notch right"></span>
+      <span class="tear"></span>
+
+      <div class="brand"><span class="dot"></span><span class="label">QNB Movie Night</span></div>
+      <div class="movie">Toy Story 5 · Sat 20 Jun · Novo Cinemas</div>
+
+      <div class="emblem-wrap">
+        <div class="scanning" id="scanning">
+          <div class="scan-box"><div class="scan-line"></div></div>
+          <div class="scan-text">Reading code</div>
+        </div>
+
+        <div class="emblem" id="emblem">
+          <span class="ring"></span>
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path class="glyph" id="glyph" d="M14 34 L27 47 L50 19" /></svg>
+        </div>
+      </div>
+
+      <div class="result" id="result">
+        <div class="kicker" id="kicker">Checked in</div>
+        <div class="name" id="name">&nbsp;</div>
+        <div class="subline" id="subline"></div>
+
+        <!-- success layout -->
+        <div class="chips" id="chips">
+          <div class="chip party"><div class="cap">Party</div><div class="val" id="partyVal">—</div></div>
+          <div class="chip screen"><div class="cap">Send to</div><div class="val" id="screenVal">—</div></div>
+        </div>
+        <div class="footline" id="footline"></div>
+
+        <!-- single-message layout (already / not found) -->
+        <div class="bigmsg" id="bigmsg" style="display:none"></div>
+      </div>
+    </div>
+    <div class="hint" id="hint">Scan a guest pass to check in</div>
+  </div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var CFG = window.QNB_CONFIG || {};
+  var qs = new URLSearchParams(location.search);
+  var id = qs.get("id");
+  var demo = qs.get("demo");          // checked_in | already | not_found  (for previews)
+  var instant = qs.get("instant") === "1"; // skip the scan delay (for screenshots)
+
+  var el = function (x) { return document.getElementById(x); };
+  var THEMES = {
+    checked_in: { c: "#2FAE62", soft: "rgba(47,174,98,.14)", glyph: "M14 34 L27 47 L50 19", kicker: "Checked in" },
+    already:    { c: "#E0922B", soft: "rgba(224,146,43,.15)", glyph: "M32 14 L32 38 M32 48 L32 49", kicker: "Already in" },
+    not_found:  { c: "#D24B3E", soft: "rgba(210,75,62,.15)", glyph: "M20 20 L44 44 M44 20 L20 44", kicker: "No match" }
+  };
+
+  function fmtTime(iso) {
+    try {
+      return new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit", minute: "2-digit", hour12: false, timeZone: CFG.TIME_ZONE || undefined
+      }).format(iso ? new Date(iso) : new Date());
+    } catch (e) { return ""; }
+  }
+
+  function sparkles(node, color) {
+    var n = 10;
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement("span");
+      s.className = "spark";
+      var ang = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+      var dist = 56 + Math.random() * 34;
+      s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+      s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+      s.style.background = (i % 2) ? color : "#D8B25A";
+      s.style.left = "54px"; s.style.top = "54px";
+      node.appendChild(s);
+    }
+  }
+
+  function render(data) {
+    var status = data.status;
+    var t = THEMES[status] || THEMES.not_found;
+    document.documentElement.style.setProperty("--theme", t.c);
+    document.documentElement.style.setProperty("--theme-soft", t.soft);
+    el("glyph").setAttribute("d", t.glyph);
+    el("kicker").textContent = t.kicker;
+
+    var ticket = el("ticket");
+    var first = (data.first_name || "").trim();
+
+    if (status === "checked_in") {
+      el("name").textContent = first || "Guest";
+      el("subline").textContent = "Welcome — enjoy the show 🍿";
+      el("partyVal").innerHTML = data.party_size + " <small>" + (data.party_size == 1 ? "guest" : "guests") + "</small>";
+      el("screenVal").textContent = "Screen " + data.screen;
+      el("footline").innerHTML = "Checked in <b>" + fmtTime(data.checked_in_at) + "</b>";
+      el("chips").style.display = "flex";
+      el("footline").style.display = "block";
+      el("bigmsg").style.display = "none";
+    } else if (status === "already") {
+      ticket.classList.add("solo");
+      el("name").textContent = first || "Guest";
+      el("subline").textContent = "";
+      el("chips").style.display = "none";
+      el("footline").style.display = "none";
+      var b = el("bigmsg"); b.style.display = "block";
+      b.innerHTML = "<span class='accent'>Already checked in</span> at <b>" + fmtTime(data.checked_in_at) +
+                    "</b>.<br>No action needed — wave them through.";
+    } else { // not_found
+      ticket.classList.add("solo");
+      el("kicker").textContent = "No match";
+      el("name").textContent = "Not on the list";
+      el("name").style.fontSize = "clamp(26px,9vw,34px)";
+      el("subline").textContent = "";
+      el("chips").style.display = "none";
+      el("footline").style.display = "none";
+      var bm = el("bigmsg"); bm.style.display = "block";
+      bm.innerHTML = "We couldn't find this pass.<br><span class='accent'>Please direct them to the desk.</span>";
+    }
+
+    // run the reveal
+    el("scanning").style.display = "none";
+    var emblem = el("emblem");
+    emblem.classList.add("show");
+    if (status === "checked_in") sparkles(emblem, t.c);
+    el("result").classList.add("reveal");
+    el("hint").textContent = "";
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate(status === "checked_in" ? [18, 40, 18] : status === "already" ? 30 : [60, 50, 60]); } catch (e) {}
+    }
+  }
+
+  function show(data) {
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var delay = (instant || reduce) ? 0 : 900;
+    setTimeout(function () { render(data); }, delay);
+  }
+
+  async function checkIn(guestId) {
+    var url = CFG.SUPABASE_URL + "/rest/v1/rpc/check_in_guest";
+    var res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": CFG.SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + CFG.SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ guest_id: guestId })
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    var rows = await res.json();
+    // RPC returns a single row (table-returning fn) → take first
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
+
+  // ---- entry ----
+  if (demo) {
+    var mock = {
+      checked_in: { status: "checked_in", first_name: "Shahab", party_size: 3, screen: 1, checked_in_at: new Date().toISOString() },
+      already:    { status: "already", first_name: "Maryam", party_size: 2, screen: 1, checked_in_at: "2026-06-20T16:08:00+03:00" },
+      not_found:  { status: "not_found", first_name: null, party_size: null, screen: null, checked_in_at: null }
+    }[demo] || { status: "not_found" };
+    show(mock);
+  } else if (!id) {
+    show({ status: "not_found" });
+  } else {
+    checkIn(id).then(show).catch(function (e) {
+      el("scanning").style.display = "none";
+      el("hint").textContent = "";
+      render({ status: "not_found" });
+      el("bigmsg").innerHTML = "Couldn't reach the server.<br><span class='accent'>Check connection and rescan.</span>";
+      console.error(e);
+    });
+  }
+})();
+</script>
+</body>
+</html>
