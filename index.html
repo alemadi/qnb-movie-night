@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0e14" />
+  <title>QNB Movie Night — Your Ticket</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">🎬</div>
+      <div>
+        <h1>QNB Movie Night</h1>
+        <p>Toy Story 5 · Sat 20 June · Novo Cinemas, Doha Oasis</p>
+      </div>
+    </div>
+
+    <!-- ============================ VERIFY ============================ -->
+    <section class="card" id="view-verify">
+      <h2>Find your ticket 🎟️</h2>
+      <p class="lead">Enter the mobile number you registered with and we'll pull up your seat.</p>
+      <div id="verifyMsg" class="msg"></div>
+      <form id="verifyForm" novalidate>
+        <div class="field">
+          <label for="mobile">Mobile number</label>
+          <div class="phone">
+            <span class="affix"><span class="flag">🇶🇦</span>+974</span>
+            <input type="tel" id="mobile" name="mobile" inputmode="numeric"
+                   autocomplete="tel-national" placeholder="5512 3456" maxlength="12" />
+          </div>
+        </div>
+        <button type="submit" id="verifyBtn">Find my ticket</button>
+      </form>
+    </section>
+
+    <!-- ============================ LOADING =========================== -->
+    <section class="card hidden" id="view-loading">
+      <div class="center-spin"><div class="spinner dark"></div></div>
+      <p class="center muted">Looking up your booking…</p>
+    </section>
+
+    <!-- ========================== NOT FOUND =========================== -->
+    <section class="card hidden" id="view-notfound">
+      <div class="hero">
+        <span class="emoji">🔍</span>
+        <h2>We couldn't find that number</h2>
+        <p>No registration matches that mobile. Double-check the number you signed up with, or see a staff member at the entrance.</p>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" data-action="reset">Try another number</button>
+      </div>
+    </section>
+
+    <!-- ========================== WAITLIST ============================ -->
+    <section class="card hidden" id="view-waitlist">
+      <div class="hero">
+        <span class="emoji">⏳</span>
+        <span class="badge-status waitlist">● Waitlist</span>
+        <h2 id="wlName">You're on the waitlist</h2>
+        <p>Your registration came in after the halls filled up. If a seat opens we'll be in touch — you can still come by the entrance on the night in case of no-shows.</p>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" data-action="reset">Check another number</button>
+      </div>
+    </section>
+
+    <!-- ============================ TICKET ============================ -->
+    <section class="hidden" id="view-ticket">
+      <div id="offlineBanner" class="offline-pill hidden">⚠️ Offline — showing your saved ticket</div>
+
+      <div class="ticket">
+        <div class="strip"></div>
+        <div class="ticket-head">
+          <div class="poster">🍿</div>
+          <div>
+            <p class="evt-title">Toy Story 5</p>
+            <p class="evt-sub">Sat 20 June 2026 · Novo Cinemas, Doha Oasis</p>
+          </div>
+          <div class="admitted-stamp hidden" id="ticketAdmitted">CHECKED IN</div>
+        </div>
+
+        <div class="guest">
+          <p class="gname" id="tName">—</p>
+          <p class="gsub">Show this QR at the door</p>
+        </div>
+
+        <div class="meta">
+          <div class="cell">
+            <div class="k">Hall</div>
+            <div class="v" id="tHall">—</div>
+          </div>
+          <div class="cell">
+            <div class="k">Guests</div>
+            <div class="v" id="tGuests">—</div>
+          </div>
+          <div class="cell">
+            <div class="k">Ref</div>
+            <div class="v small" id="tRef">—</div>
+          </div>
+        </div>
+
+        <div class="perf"><span class="notch l"></span><span class="notch r"></span></div>
+
+        <div class="stub">
+          <div class="qr-box"><div id="qrCanvas"></div></div>
+          <p class="qr-hint">Screenshot this — it works even with no signal</p>
+          <div class="barcode"></div>
+          <div class="barcode-ref" id="tBarcodeRef">—</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="ok" data-action="screenshot">📸 Save by screenshot</button>
+        <button class="secondary" disabled>Add to wallet <span class="soon-tag">SOON</span></button>
+        <button class="ghost" data-action="reset">Not you? Search again</button>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Trouble loading your ticket? Find a QNB Movie Night staff member at the Novo Cinemas entrance.
+    </p>
+  </div>
+
+  <!-- Libraries (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/verify.js?v=1"></script>
+</body>
+</html>

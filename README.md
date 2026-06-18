@@ -1,225 +1,128 @@
-# 🎬 QNB Movie Night — QR Check-In
+# QNB Movie Night — Check-in App
 
-A simple, mobile-friendly web app to check guests in at a movie screening using a
-QR code. Guests scan a QR poster at the entrance, enter the mobile number they
-reserved with, confirm their booking, and tap **Confirm Check-In**. Admins manage
-the guest list and watch live attendance from a password-protected dashboard.
+A tiny, robust check-in system for the QNB Movie Night screening
+(**Toy Story 5 · Sat 20 June 2026 · Novo Cinemas, Doha Oasis**).
 
-Built to be tiny and self-contained: **Node.js + Express + SQLite** with a plain
-HTML/CSS/JS frontend (no build step).
+Two pages, one Supabase backend, zero server to babysit:
 
----
+| Page | Who | What |
+|------|-----|------|
+| `index.html` | Guests | Enter mobile → verify → get a QR ticket (works offline once loaded) |
+| `scan.html`  | Organizers | PIN gate → camera scans the QR → admits / flags already-checked-in |
 
-## ✨ Features
-
-**Guest check-in page** (the QR code points here)
-- Enter mobile number → see your booking (name, mobile, seats, status)
-- Tap **Confirm Check-In** → status becomes *Checked In* and the time is recorded
-- Duplicate-proof: scanning again shows *"You're already checked in"*
-- Guests can only see their own details, and only after entering the right number
-
-**Admin dashboard** (`/admin`, password protected)
-- Live totals: registered guests, seats reserved, checked-in, remaining
-- Search by name or mobile number
-- Add guests one at a time, or bulk import a CSV / pasted list
-- See each guest's status (Pending / Checked In) and check-in time
-- Manually check in, undo a check-in, or delete a guest
-- Generate & print the entrance QR poster
-
-**Security basics**
-- Admin login with a bcrypt-hashed password and signed session cookies
-- Rate limiting on guest lookups (anti brute-force) and admin login
-- Guest API only ever returns the single matching guest's own fields
+- **Frontend:** static HTML/CSS/JS on **GitHub Pages**. No build step.
+- **Backend:** **Supabase** (Postgres). The browser only ever holds the public
+  anon key; everything goes through two locked-down RPCs.
 
 ---
 
-## 🗄️ Database structure
+## Architecture & security
 
-One table, `guests` (SQLite):
-
-| Column          | Type    | Notes                                            |
-|-----------------|---------|--------------------------------------------------|
-| `id`            | INTEGER | Primary key                                      |
-| `full_name`     | TEXT    | Guest full name                                  |
-| `mobile`        | TEXT    | **Unique** — normalized lookup key               |
-| `seats`         | INTEGER | Party members / reserved seats                   |
-| `status`        | TEXT    | `pending` or `checked_in`                        |
-| `checked_in_at` | TEXT    | ISO timestamp, set on check-in                   |
-| `created_at`    | TEXT    | When the row was added                           |
-
-Mobile numbers are **normalized** before storing/looking up — spaces, dashes and
-parentheses are stripped (a leading `+` is kept) — so `+974 5512-3456`,
-`+97455123456`, etc. all match the same guest. This is also what prevents
-duplicate guest rows and duplicate check-ins.
-
----
-
-## 🚀 Run it locally
-
-**Prerequisites:** Node.js 18+ (tested on Node 22).
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. (Optional) configure environment — set an admin password etc.
-cp .env.example .env
-#   then edit .env (default admin password is "admin123")
-
-# 3. (Optional) load 5 sample guests so you have data to play with
-npm run seed
-
-# 4. Start the server
-npm start
+```
+ Guest phone ──(anon key)──► verify_guest(mobile)  ─┐
+ Organizer  ──(anon key)──► check_in(token, pin)  ─┤   Supabase
+                                                    └─► guests / app_config
+ Importer  ──(service-role key, .env only)────────────► guests  (bulk upsert)
 ```
 
-Then open:
-
-- Guest check-in: **http://localhost:3000/**
-- Admin dashboard: **http://localhost:3000/admin** (password: `admin123` by default)
-
-> Use `npm run dev` instead of `npm start` to auto-restart on file changes.
-
-### Try the full flow locally
-1. Open `/admin`, log in, go to **Add / Import**, and import `sample-guests.csv`
-   (or paste a few `name, mobile, seats` lines).
-2. Open the **QR Code** tab — that QR encodes your check-in URL.
-3. On your phone (same Wi-Fi), browse to `http://<your-computer-ip>:3000/`,
-   enter a guest's mobile number, and confirm check-in.
-4. Watch the dashboard totals update.
+- **RLS blocks all table reads/writes** for the anon (and authenticated) roles.
+  The guest list and the PIN are unreachable with the public key — verified:
+  `GET /rest/v1/guests` → `permission denied`.
+- All guest access is via two `SECURITY DEFINER` RPCs:
+  - `verify_guest(p_mobile)` → `{ found, status, name, guest_count, hall, ticket_token, checked_in }`
+    (`guest_count` / `hall` / `ticket_token` are `null` unless `status='confirmed'`).
+  - `check_in(p_token, p_pin)` → `{ valid, authorized, already_checked_in, name, hall, guest_count, checked_in_at }`.
+    PIN-gated; the admit is an **atomic** `UPDATE … WHERE checked_in=false`, so a
+    double-scan can never double-admit.
+- **Mobile normalisation** is identical in SQL (`normalize_mobile`) and JS:
+  strip non-digits, keep the **last 8** (Qatari mobiles; `+974` / spaces / `00974` fold).
+- The **service-role key never touches `js/` or git** — it lives only in `.env`.
 
 ---
 
-## 📥 Importing a guest list
+## Repo layout
 
-In the dashboard's **Add / Import** tab you can either upload a `.csv` file or
-paste rows. Accepted format (a header row is optional, columns can be in any
-order when a header is present):
-
-```csv
-Full Name, Mobile, Seats
-Sara Ahmed, +97455123456, 2
-Khalid Al-Thani, +97466778899, 4
 ```
-
-Re-importing a mobile number **updates** that guest instead of creating a
-duplicate. A ready-made `sample-guests.csv` is included.
-
----
-
-## 🔗 QR code
-
-The QR code (Admin → **QR Code** tab) encodes the public check-in URL. Locally
-that's `http://localhost:3000/`; once deployed it uses your real domain.
-
-> Phones can't reach `localhost` over a printed QR. For a real event, **set
-> `PUBLIC_URL`** to your deployed HTTPS URL (see below) so the generated QR points
-> somewhere guests' phones can actually open. Use **Print QR poster** to print it.
-
----
-
-## 🔐 Configuration (environment variables)
-
-All optional — sensible defaults are used for local dev. See `.env.example`.
-
-| Variable               | Default        | Purpose                                                        |
-|------------------------|----------------|----------------------------------------------------------------|
-| `PORT`                 | `3000`         | Port to listen on                                              |
-| `ADMIN_PASSWORD`       | `admin123`     | Plain admin password (hashed at startup)                       |
-| `ADMIN_PASSWORD_HASH`  | —              | Pre-hashed bcrypt password (takes precedence; best for prod)   |
-| `SESSION_SECRET`       | random         | Secret for signing session cookies — **set this in prod**      |
-| `PUBLIC_URL`           | derived        | Public base URL used for the QR target                         |
-| `DB_PATH`              | `./data/checkin.db` | SQLite file location                                      |
-| `NODE_ENV`             | —              | Set to `production` to enable secure cookies                   |
-
-Generate production secrets:
-
-```bash
-# bcrypt hash of your admin password
-node -e "console.log(require('bcryptjs').hashSync('YOUR_PASSWORD', 10))"
-# a strong session secret
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+index.html         verify flow + ticket (states from the design)
+scan.html          organizer scanner
+css/styles.css     design tokens + components (dark cinema/ticket)
+js/config.js       Supabase URL + anon key only (public, committed)
+js/verify.js       mobile → verify_guest → render ticket + QR
+js/scan.js         PIN gate → html5-qrcode → check_in → result states
+db/schema.sql      locked schema (tables + RLS + RPCs) — apply as-is
+scripts/import.mjs Excel → Supabase (service-role; dry-run by default)
+.env.example       importer env template (.env is gitignored)
 ```
 
 ---
 
-## ☁️ Deploy online
+## Setup
 
-The app is a standard Node web server with a SQLite file on disk, so any host
-that runs Node **and gives you a persistent disk** works well. Below are two easy
-options. After deploying, set `PUBLIC_URL` to your live URL and re-open the
-dashboard so the QR poster points to the right place.
-
-### Option A — Railway (simplest, has persistent volumes)
-1. Push this repo to GitHub.
-2. On [railway.app](https://railway.app): **New Project → Deploy from GitHub repo**.
-3. Add a **Volume** mounted at `/app/data` (so the SQLite DB survives restarts).
-4. Add environment variables:
-   - `ADMIN_PASSWORD` (or `ADMIN_PASSWORD_HASH`)
-   - `SESSION_SECRET`
-   - `NODE_ENV=production`
-   - `DB_PATH=/app/data/checkin.db`
-   - `PUBLIC_URL=https://<your-app>.up.railway.app`
-5. Railway runs `npm install` then `npm start` automatically. Open the URL.
-
-### Option B — Render
-1. Push to GitHub, then on [render.com](https://render.com): **New → Web Service**.
-2. Build command `npm install`, start command `npm start`.
-3. Add a **Disk** mounted at `/var/data` and set `DB_PATH=/var/data/checkin.db`.
-4. Set the same env vars as above (with the Render URL for `PUBLIC_URL`).
-
-> ⚠️ **Persistent disk matters.** Platforms with ephemeral filesystems (e.g. a
-> plain Heroku dyno, some serverless tiers) will wipe `checkin.db` on every
-> restart/redeploy. Always attach a volume/disk and point `DB_PATH` at it.
-
-### Want a hosted database instead of SQLite (Supabase)?
-SQLite is perfect for a single venue. If you'd rather use a managed Postgres so
-multiple instances can share data, create a Supabase project with this table and
-swap `db.js` to query it — the rest of the app is unchanged:
+### 1. Database
+Apply [`db/schema.sql`](db/schema.sql) to a fresh Supabase project (SQL Editor),
+then set the **real** organizer PIN out-of-band (not in git):
 
 ```sql
-create table guests (
-  id            bigint generated always as identity primary key,
-  full_name     text not null,
-  mobile        text not null unique,
-  seats         integer not null default 1,
-  status        text not null default 'pending',
-  checked_in_at timestamptz,
-  created_at    timestamptz not null default now()
-);
+update app_config set value = '<YOUR_PIN>' where key = 'organizer_pin';
 ```
+
+### 2. Frontend config
+Put the project URL + **anon** key in [`js/config.js`](js/config.js). That's it —
+the anon key is safe to commit because RLS does the protecting.
+
+### 3. Deploy
+GitHub Pages → serve the repo root. Hard-refresh with a cache-buster
+(`?v=2`) after each deploy.
 
 ---
 
-## 📁 Project structure
+## Importing the guest list
 
-```
-.
-├── server.js          # Express server: guest + admin APIs, QR, auth
-├── db.js              # SQLite schema + all data access helpers
-├── seed.js            # Loads sample guests (npm run seed)
-├── sample-guests.csv  # Example import file
-├── .env.example       # Copy to .env and configure
-└── public/
-    ├── index.html     # Guest check-in page (QR points here)
-    ├── admin.html     # Admin dashboard
-    ├── css/styles.css # Responsive, mobile-first styling
-    └── js/
-        ├── checkin.js # Guest flow logic
-        └── admin.js   # Dashboard logic
+The importer reads an `.xlsx`/`.csv` export of the RSVP sheet and upserts guests.
+It is **dry-run by default** and writes nothing until you pass `--commit`.
+
+```bash
+npm install
+cp .env.example .env          # add SUPABASE_SERVICE_ROLE_KEY
+
+# 1) Dry-run: prints column mapping, first 5 normalised rows, confirmed/waitlist counts
+node scripts/import.mjs --file rsvp.xlsx --hall3 120 --hall4 120
+
+# 2) Once the mapping looks right:
+node scripts/import.mjs --file rsvp.xlsx --hall3 120 --hall4 120 --commit
 ```
 
-## 🧰 API reference (quick)
+Mapping (auto-detected from headers, override-friendly):
 
-| Method | Endpoint                       | Auth   | Purpose                          |
-|--------|--------------------------------|--------|----------------------------------|
-| POST   | `/api/lookup`                  | public | Find a guest by mobile           |
-| POST   | `/api/checkin`                 | public | Confirm check-in (idempotent)    |
-| POST   | `/api/admin/login` / `logout`  | —      | Admin session                    |
-| GET    | `/api/admin/stats`             | admin  | Dashboard totals                 |
-| GET    | `/api/admin/guests?q=`         | admin  | List / search guests             |
-| POST   | `/api/admin/guests`            | admin  | Add one guest                    |
-| POST   | `/api/admin/import`            | admin  | Bulk import (file or text)       |
-| POST   | `/api/admin/guests/:id/reset`  | admin  | Undo a check-in                  |
-| DELETE | `/api/admin/guests/:id`        | admin  | Delete a guest                   |
-| GET    | `/api/admin/qr`                | admin  | QR code PNG                      |
+| Field | Source column |
+|-------|---------------|
+| `name` | *Full Name* (falls back to a name derived from *Work Email* when blank/`Yes`/`No`) |
+| `mobile` | *Personal Mobile Number* (falls back to *Office Extension Number* if it's a valid 8-digit mobile) |
+| `guest_count` | *Total number attending (including you)* — **total party incl. the employee** |
+| attending | *Will you be attending?* — only an explicit **No** is excluded |
+| `hall` / `status` | assigned by **capacity** (Hall 3 → Hall 4 → waitlist), in sheet order |
+
+**Idempotent:** upsert on conflict `mobile`; re-running preserves each guest's
+`ticket_token`, `checked_in`, `checked_in_at`.
+
+---
+
+## Venue resilience (flaky cinema Wi-Fi)
+
+- **Guest:** the loaded ticket is cached in `sessionStorage`, so a dropped signal
+  still shows the QR (a screenshot works fully offline — the QR is self-contained).
+- **Scanner:** on a network error it shows **No connection — Retry** and never
+  silently admits or rejects. The atomic `check_in` resolves any duplicate the
+  moment it reaches the server.
+
+---
+
+## Test checklist
+
+1. Number not found → "couldn't find that number"
+2. Waitlist guest → waitlist screen (no ticket)
+3. Confirmed guest → ticket + scannable QR of the raw token
+4. Scan a valid ticket → **Admit**
+5. Re-scan the same ticket → **Already checked in** (+ time)
+6. Scan garbage → **Invalid ticket**
+7. Wrong PIN → blocked (`authorized=false`)

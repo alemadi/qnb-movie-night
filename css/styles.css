@@ -1,0 +1,360 @@
+/* ==========================================================================
+   QNB Movie Night — design tokens + components
+   Dark cinema / ticket aesthetic. Shared by index.html (verify + ticket)
+   and scan.html (organizer scanner).
+   ========================================================================== */
+
+:root {
+  --bg: #0b0e14;
+  --bg-glow: #1a1230;
+  --panel: #151a23;
+  --panel-2: #1d2430;
+  --panel-3: #232c3a;
+  --border: #2a323d;
+  --border-soft: #222a35;
+  --text: #eef2f8;
+  --muted: #93a1b5;
+  --muted-2: #6b7688;
+
+  --brand: #7c3aed;
+  --brand-2: #a855f7;
+  --brand-3: #c084fc;
+  --brand-glow: rgba(124, 58, 237, 0.45);
+
+  --ok: #22c55e;
+  --ok-bg: #0f2a1a;
+  --ok-border: #1e5631;
+  --warn: #f59e0b;
+  --warn-bg: #2a230f;
+  --warn-border: #5b4a1d;
+  --danger: #ef4444;
+  --danger-bg: #2a1417;
+  --danger-border: #5b1d22;
+  --info: #38bdf8;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(1100px 560px at 50% -12%, var(--bg-glow) 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, #0e1a2e 0%, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.wrap {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 22px 16px 56px;
+}
+
+/* ---- Brand header ---------------------------------------------------- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.brand .logo {
+  font-size: 26px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 13px;
+  box-shadow: 0 8px 22px var(--brand-glow);
+  flex: none;
+}
+.brand h1 { font-size: 17px; margin: 0; line-height: 1.15; letter-spacing: .2px; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; }
+
+/* ---- Cards ----------------------------------------------------------- */
+.card {
+  background: linear-gradient(180deg, var(--panel) 0%, #11161f 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+h2 { font-size: 18px; margin: 0 0 8px; letter-spacing: .2px; }
+.lead { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; line-height: 1.5; }
+
+label { display: block; font-size: 12.5px; color: var(--muted); margin: 0 0 7px; font-weight: 600; letter-spacing: .02em; }
+
+/* ---- Inputs ---------------------------------------------------------- */
+.input,
+input[type="text"], input[type="tel"], input[type="number"], input[type="password"] {
+  width: 100%;
+  padding: 14px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 16px; /* >=16px stops iOS zoom-on-focus */
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.input:focus, input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28);
+}
+
+/* phone input with +974 affix */
+.phone {
+  display: flex; align-items: stretch;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.phone:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(124,58,237,.28); }
+.phone .affix {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 12px 0 14px;
+  color: var(--text); font-size: 16px; font-weight: 600;
+  background: var(--panel-3);
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+.phone .affix .flag { font-size: 16px; }
+.phone input {
+  flex: 1; border: none; background: transparent; box-shadow: none;
+  padding: 14px 14px 14px 12px; letter-spacing: 1px;
+}
+.phone input:focus { box-shadow: none; }
+
+.field { margin-bottom: 16px; }
+
+/* ---- Buttons --------------------------------------------------------- */
+button, .btn {
+  appearance: none; border: none; cursor: pointer;
+  font-size: 16px; font-weight: 700;
+  padding: 15px 16px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #fff; width: 100%;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  box-shadow: 0 8px 20px var(--brand-glow);
+  transition: transform .05s, opacity .15s, box-shadow .15s, background .15s;
+}
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+button.secondary {
+  background: var(--panel-2); border: 1px solid var(--border);
+  color: var(--text); box-shadow: none;
+}
+button.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); box-shadow: none; }
+button.danger { background: linear-gradient(135deg, #dc2626, #ef4444); box-shadow: 0 8px 20px rgba(239,68,68,.35); }
+button.ok { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 8px 20px rgba(34,197,94,.35); }
+.btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+
+/* SOON pill on a disabled button */
+.soon-tag {
+  font-size: 10px; font-weight: 800; letter-spacing: .08em;
+  background: var(--panel-3); color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 3px 8px; margin-left: 2px;
+}
+
+/* ---- Messages -------------------------------------------------------- */
+.msg { padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13.5px; margin-bottom: 16px; display: none; line-height: 1.45; }
+.msg.show { display: block; }
+.msg.error { background: var(--danger-bg); border: 1px solid var(--danger-border); color: #fca5a5; }
+.msg.success { background: var(--ok-bg); border: 1px solid var(--ok-border); color: #86efac; }
+.msg.info { background: #0e2230; border: 1px solid #1d4a63; color: #93c5fd; }
+.msg.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: #fcd34d; }
+
+.muted { color: var(--muted); font-size: 13px; }
+.center { text-align: center; }
+.hidden { display: none !important; }
+.footer-note { text-align: center; color: var(--muted-2); font-size: 11.5px; margin-top: 26px; line-height: 1.5; }
+.footer-note a { color: var(--muted); }
+
+/* ---- Status hero (not-found / waitlist) ------------------------------ */
+.hero { text-align: center; padding: 8px 4px 2px; }
+.hero .emoji { font-size: 58px; line-height: 1; margin-bottom: 10px; display: block; }
+.hero h2 { font-size: 21px; margin: 0 0 8px; }
+.hero p { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0 auto; max-width: 320px; }
+.badge-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+  margin: 14px 0 4px; letter-spacing: .02em;
+}
+.badge-status.waitlist { background: var(--warn-bg); color: #fcd34d; border: 1px solid var(--warn-border); }
+.badge-status.confirmed { background: var(--ok-bg); color: #86efac; border: 1px solid var(--ok-border); }
+
+/* ==========================================================================
+   TICKET
+   ========================================================================== */
+.ticket {
+  position: relative;
+  background: linear-gradient(180deg, #1b2030 0%, #141925 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+/* top film-strip accent */
+.ticket .strip {
+  height: 8px;
+  background: repeating-linear-gradient(90deg, var(--brand) 0 14px, var(--brand-2) 14px 28px);
+  opacity: .9;
+}
+.ticket .ticket-head {
+  padding: 18px 20px 16px;
+  display: flex; align-items: center; gap: 13px;
+}
+.ticket .poster {
+  width: 52px; height: 52px; border-radius: 12px; flex: none;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  display: grid; place-items: center; font-size: 26px;
+  box-shadow: 0 6px 16px var(--brand-glow);
+}
+.ticket .ticket-head .evt-title { font-size: 16px; font-weight: 800; margin: 0; letter-spacing: .2px; }
+.ticket .ticket-head .evt-sub { font-size: 12px; color: var(--muted); margin: 3px 0 0; }
+.ticket .admitted-stamp {
+  margin-left: auto; flex: none;
+  font-size: 10.5px; font-weight: 800; letter-spacing: .06em;
+  color: #86efac; border: 1.5px solid var(--ok-border);
+  background: var(--ok-bg); border-radius: 8px; padding: 5px 8px;
+  transform: rotate(4deg);
+}
+
+/* guest name block */
+.ticket .guest {
+  padding: 4px 20px 16px;
+}
+.ticket .guest .gname { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.15; }
+.ticket .guest .gsub { color: var(--muted); font-size: 13px; margin: 5px 0 0; }
+
+/* meta grid: hall / guests / ref */
+.ticket .meta {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px; background: var(--border-soft);
+  border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft);
+}
+.ticket .meta .cell { background: #141925; padding: 13px 14px; }
+.ticket .meta .cell .k { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.ticket .meta .cell .v { font-size: 16px; font-weight: 800; margin-top: 4px; }
+.ticket .meta .cell .v.small { font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .5px; }
+
+/* perforation divider */
+.ticket .perf { position: relative; height: 28px; }
+.ticket .perf::before {
+  content: ""; position: absolute; top: 50%; left: 16px; right: 16px;
+  border-top: 2px dashed #34404f; transform: translateY(-50%);
+}
+.ticket .perf .notch { position: absolute; top: 50%; width: 26px; height: 26px; background: var(--bg); border: 1px solid var(--border); border-radius: 50%; transform: translateY(-50%); }
+.ticket .perf .notch.l { left: -14px; }
+.ticket .perf .notch.r { right: -14px; }
+
+/* QR stub */
+.ticket .stub { padding: 4px 20px 22px; text-align: center; }
+.ticket .qr-box {
+  display: inline-block; background: #fff; padding: 12px;
+  border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.4);
+}
+.ticket .qr-box canvas, .ticket .qr-box img { display: block; width: 200px; height: 200px; }
+.ticket .qr-hint { color: var(--muted); font-size: 12px; margin: 13px 0 0; }
+
+/* barcode strip */
+.barcode {
+  height: 46px; margin: 16px 6px 4px;
+  background-image: repeating-linear-gradient(90deg,
+    var(--text) 0 2px, transparent 2px 4px,
+    var(--text) 4px 7px, transparent 7px 9px,
+    var(--text) 9px 10px, transparent 10px 14px,
+    var(--text) 14px 17px, transparent 17px 18px);
+  border-radius: 3px; opacity: .92;
+}
+.barcode-ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; letter-spacing: 3px; color: var(--muted); margin-top: 8px; }
+
+/* offline banner on ticket */
+.offline-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--warn-bg); color: #fcd34d; border: 1px solid var(--warn-border);
+  border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* ==========================================================================
+   SCANNER (scan.html)
+   ========================================================================== */
+.scan-shell { max-width: 480px; }
+
+.pin-dots { display: flex; gap: 12px; justify-content: center; margin: 4px 0 18px; }
+.pin-dots .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--panel-3); border: 1px solid var(--border); transition: background .12s, transform .12s; }
+.pin-dots .dot.on { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border-color: transparent; transform: scale(1.08); }
+
+/* number keypad */
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.keypad button { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); font-size: 22px; font-weight: 700; padding: 16px 0; box-shadow: none; }
+.keypad button.alt { font-size: 14px; font-weight: 600; color: var(--muted); }
+
+/* camera viewport */
+#reader { width: 100%; border-radius: var(--radius); overflow: hidden; background: #000; border: 1px solid var(--border); }
+#reader video { display: block; width: 100% !important; height: auto !important; }
+.scan-frame {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  background: #05070b; aspect-ratio: 1/1; display: grid; place-items: center;
+  border: 1px solid var(--border);
+}
+.scan-frame .reticle {
+  position: absolute; inset: 16%;
+  border-radius: 16px;
+  box-shadow: 0 0 0 3px rgba(124,58,237,.55), 0 0 0 9999px rgba(0,0,0,.25) inset;
+  pointer-events: none;
+}
+.scan-frame .reticle::before, .scan-frame .reticle::after,
+.scan-frame .reticle .b1, .scan-frame .reticle .b2 { content:""; }
+.scan-status { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; }
+.scan-status .live { color: var(--brand-3); font-weight: 700; }
+
+.toprow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; }
+.toprow .pin-ok { font-size: 12px; color: var(--ok); display: inline-flex; align-items: center; gap: 6px; }
+.toprow button { width: auto; padding: 9px 12px; font-size: 13px; }
+
+/* big result screens */
+.result { text-align: center; padding: 14px 6px; border-radius: var(--radius); }
+.result .ricon {
+  width: 96px; height: 96px; border-radius: 50%; margin: 6px auto 16px;
+  display: grid; place-items: center; font-size: 52px;
+}
+.result.admit .ricon { background: var(--ok-bg); border: 2px solid var(--ok-border); color: #86efac; }
+.result.already .ricon { background: var(--warn-bg); border: 2px solid var(--warn-border); color: #fcd34d; }
+.result.invalid .ricon { background: var(--danger-bg); border: 2px solid var(--danger-border); color: #fca5a5; }
+.result.offline .ricon { background: #0e2230; border: 2px solid #1d4a63; color: #93c5fd; }
+.result h2 { font-size: 24px; margin: 0 0 6px; }
+.result .rname { font-size: 20px; font-weight: 800; margin: 14px 0 2px; }
+.result .rmeta { color: var(--muted); font-size: 14px; margin: 2px 0; }
+.result .rmeta b { color: var(--text); }
+.result .rbig {
+  display: inline-flex; align-items: center; gap: 8px; margin: 10px 0 2px;
+  font-size: 30px; font-weight: 900;
+}
+.result .when { margin-top: 14px; font-size: 13px; color: var(--warn); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: var(--radius-sm); padding: 10px 12px; }
+
+/* spinner */
+.spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+.spinner.dark { border-color: rgba(124,58,237,.25); border-top-color: var(--brand); }
+.center-spin { display: grid; place-items: center; padding: 30px 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 380px) {
+  .ticket .meta .cell .v { font-size: 15px; }
+  .ticket .qr-box canvas, .ticket .qr-box img { width: 168px; height: 168px; }
+}
