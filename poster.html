@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { width: 820px; height: 1060px; background: #fff; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: #0b0e14; display: flex; flex-direction: column; align-items: center; padding: 64px 56px; }
-  .top { display: flex; align-items: center; gap: 16px; }
-  .logo { width: 76px; height: 76px; border-radius: 18px; background: linear-gradient(135deg,#7c3aed,#a855f7); display: grid; place-items: center; font-size: 42px; }
-  h1 { font-size: 40px; letter-spacing: .3px; }
-  .sub { color: #6b7688; font-size: 22px; margin-top: 8px; }
-  .headline { margin-top: 54px; font-size: 56px; font-weight: 800; text-align: center; line-height: 1.1; }
-  .headline span { background: linear-gradient(135deg,#7c3aed,#a855f7); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .qrwrap { margin-top: 44px; padding: 28px; border: 3px solid #ece9f6; border-radius: 28px; box-shadow: 0 20px 50px rgba(124,58,237,.15); }
-  #qr { width: 460px; height: 460px; }
-  #qr img, #qr canvas { width: 460px !important; height: 460px !important; display:block; }
-  .steps { margin-top: 40px; font-size: 26px; color: #1f2630; text-align: center; line-height: 1.7; }
-  .steps b { color: #7c3aed; }
-  .foot { margin-top: auto; font-size: 19px; color: #93a1b5; }
-  .url { font-family: ui-monospace, Menlo, monospace; font-size: 18px; color: #6b7688; margin-top: 6px; }
+  body { width: 820px; height: 1060px; background:
+      radial-gradient(700px 360px at 50% -4%, #16306e, transparent 60%), #0A1124;
+    font-family: "Inter", system-ui, sans-serif; color: #EEF2FB; display: flex; flex-direction: column; align-items: center; padding: 70px 56px; }
+  .cobrand { display:flex; align-items:center; gap:14px; }
+  .cobrand .q { font-family:"Sora"; font-weight:800; font-size:34px; color:#fff; }
+  .cobrand .x { color:#4D8DFF; font-weight:700; font-size:22px; }
+  .cobrand .n { font-family:"Sora"; font-weight:700; font-size:26px; color:#C9D6EE; border:2px dashed #33406a; border-radius:9px; padding:5px 16px; }
+  .sub { color:#8C97B8; font-size:22px; margin-top:18px; font-family:"JetBrains Mono"; letter-spacing:.12em; text-transform:uppercase; }
+  .headline { margin-top:46px; font-family:"Sora"; font-size:60px; font-weight:800; text-align:center; line-height:1.05; color:#fff; }
+  .headline span { background:linear-gradient(135deg,#4D8DFF,#5FE3E0); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .qrwrap { margin-top:46px; padding:26px; background:#fff; border-radius:26px; box-shadow:0 0 0 2px rgba(77,141,255,.5), 0 24px 60px rgba(0,0,0,.5); }
+  #qr { width:460px; height:460px; }
+  #qr img, #qr canvas { width:460px !important; height:460px !important; display:block; }
+  .steps { margin-top:42px; font-size:25px; color:#C9D6EE; text-align:center; line-height:1.7; }
+  .steps b { font-family:"Sora"; color:#5FE3E0; }
+  .foot { margin-top:auto; text-align:center; }
+  .foot .help { font-size:18px; color:#8C97B8; }
+  .url { font-family:"JetBrains Mono"; font-size:18px; color:#4D8DFF; margin-top:8px; }
+  .edge { width:100%; height:3px; margin-top:30px; background:linear-gradient(90deg,transparent,#4D8DFF,#5FE3E0,#4D8DFF,transparent); }
 </style></head>
 <body>
-  <div class="top">
-    <div class="logo">🎬</div>
-    <div><h1>QNB Movie Night</h1><div class="sub">Toy Story 5 · Today 4:00 PM · Novo Cinemas, Doha Oasis</div></div>
-  </div>
+  <div class="cobrand"><span class="q">QNB</span><span class="x">×</span><span class="n">NOVO</span></div>
+  <div class="sub">Movie Night · Toy Story 5 · Today 4:00 PM</div>
   <div class="headline">Scan to get<br/><span>your ticket</span></div>
   <div class="qrwrap"><div id="qr"></div></div>
   <div class="steps"><b>1.</b> Scan this code &nbsp;·&nbsp; <b>2.</b> Enter your mobile &nbsp;·&nbsp; <b>3.</b> Show your QR at the door</div>
+  <div class="edge"></div>
   <div class="foot">
-    <div>Trouble? See a QNB Movie Night staff member at the entrance.</div>
+    <div class="help">Trouble? See a QNB Movie Night staff member at the entrance.</div>
     <div class="url">alemadi.github.io/qnb-movie-night</div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script>
     new QRCode(document.getElementById("qr"), {
       text: "https://alemadi.github.io/qnb-movie-night/",
-      width: 460, height: 460, colorDark: "#0b0e14", colorLight: "#ffffff",
+      width: 460, height: 460, colorDark: "#0A1124", colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
     });
   </script>

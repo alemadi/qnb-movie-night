@@ -3,103 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0e14" />
+  <meta name="theme-color" content="#0A1124" />
   <title>QNB Movie Night — Confirm Attendance</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=2" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="brand">
-      <div class="logo">🎬</div>
-      <div>
-        <h1>QNB Movie Night</h1>
-        <p>Toy Story 5 · Sat 20 June · 4:00 PM · Novo Cinemas, Doha Oasis</p>
+  <div class="app">
+    <header class="hero light-edge">
+      <div class="hero__glow"></div>
+      <div class="cobrand">
+        <span class="cobrand__qnb">QNB</span>
+        <span class="cobrand__x">×</span>
+        <span class="cobrand__novo" data-slot>NOVO</span>
       </div>
-    </div>
+      <h1 class="hero__title">Movie Night · Toy Story 5</h1>
+      <span class="hero__chip">Today · 4:00 PM · Doha Oasis</span>
+    </header>
 
-    <!-- ============================ ASK =============================== -->
-    <section class="card" id="view-ask">
-      <div class="hero">
-        <span class="emoji">🎬</span>
-        <h2 id="askTitle">It's tonight! Are you joining us?</h2>
-        <p id="askLead">Please confirm your seats for Toy Story 5. If your plans changed, you can release seats for the waitlist.</p>
-      </div>
-      <div id="askMsg" class="msg"></div>
-      <div class="btn-row">
-        <button class="ok" data-action="to-seats" id="yesBtn">✅ Yes, I'm coming</button>
-        <button class="secondary" data-answer="no" id="noBtn">Sorry, I can't make it</button>
-      </div>
-    </section>
+    <main class="app__body">
 
-    <!-- ============================ SEATS ============================= -->
-    <section class="card hidden" id="view-seats">
-      <div class="hero" style="margin-bottom:4px">
-        <span class="emoji">🪑</span>
-        <h2>How many are coming?</h2>
-        <p>You booked <b id="bookedN">—</b> seat(s). Set how many will actually come — release any you don't need and we'll pass them to the waitlist.</p>
-      </div>
-      <div class="stepper">
-        <button class="step-btn" data-step="-1" aria-label="one fewer">−</button>
-        <div class="step-val" id="seatVal">1</div>
-        <button class="step-btn" data-step="1" aria-label="one more">+</button>
-      </div>
-      <p class="center muted" id="freedNote" style="min-height:20px;margin-top:14px"></p>
-      <div class="btn-row">
-        <button class="ok" data-action="confirm-seats">Confirm <span id="seatBtnN"></span></button>
-        <button class="ghost" data-action="back-ask">Back</button>
-      </div>
-    </section>
+      <!-- ============================ ASK =============================== -->
+      <section id="view-ask" class="center">
+        <div class="glyph glyph--wait" style="border-color:rgba(77,141,255,.5);background:rgba(77,141,255,.12)">🎬</div>
+        <h2 class="state-head" id="askTitle">It's today! Are you joining us?</h2>
+        <p class="muted fs-sm" id="askLead">Please confirm your seats for Toy Story 5. If your plans changed, you can release seats for the waitlist.</p>
+        <div class="stack" style="width:100%;margin-top:8px">
+          <button class="btn btn--primary" data-action="to-seats" id="yesBtn">✅ Yes, I'm joining</button>
+          <button class="btn btn--ghost" data-answer="no" id="noBtn">Sorry, I can't make it</button>
+        </div>
+      </section>
 
-    <!-- ============================ LOADING =========================== -->
-    <section class="card hidden" id="view-loading">
-      <div class="center-spin"><div class="spinner dark"></div></div>
-      <p class="center muted">One moment…</p>
-    </section>
+      <!-- ============================ SEATS ============================= -->
+      <section id="view-seats" class="center hidden">
+        <div class="glyph" style="border-color:rgba(95,227,224,.5);background:rgba(95,227,224,.12)">🪑</div>
+        <h2 class="state-head">How many are coming?</h2>
+        <p class="muted fs-sm">You booked <b id="bookedN">—</b> seat(s). Set how many will actually come — release any you don't need for the waitlist.</p>
+        <div class="stepper" style="margin-top:6px">
+          <button data-step="-1" aria-label="one fewer">−</button>
+          <div class="step-val" id="seatVal">1</div>
+          <button data-step="1" aria-label="one more">+</button>
+        </div>
+        <p class="freed-note" id="freedNote"></p>
+        <div class="stack" style="width:100%;margin-top:8px">
+          <button class="btn btn--primary" data-action="confirm-seats">Confirm <span id="seatBtnN"></span></button>
+          <button class="btn btn--ghost btn--sm" data-action="back-ask">Back</button>
+        </div>
+      </section>
 
-    <!-- ====================== YES → CONFIRMED ========================= -->
-    <section class="card hidden" id="view-confirmed">
-      <div class="hero">
-        <span class="emoji">🎉</span>
-        <span class="badge-status confirmed">● Seat confirmed</span>
-        <h2 id="cfTitle">You're all set!</h2>
-        <p id="cfLead">Looking forward to seeing you today at <b>4:00 PM</b>.</p>
-        <p class="muted" id="cfHint" style="margin-top:14px">When you arrive at Novo Cinemas, Doha Oasis, scan the <b>entrance QR</b> and enter your mobile to get your ticket.</p>
-      </div>
-    </section>
+      <!-- ============================ LOADING =========================== -->
+      <section id="view-loading" class="center hidden">
+        <div class="spinner"></div>
+        <p class="muted fs-sm">One moment…</p>
+      </section>
 
-    <!-- ============================ NO =============================== -->
-    <section class="card hidden" id="view-no">
-      <div class="hero">
-        <span class="emoji">💛</span>
-        <h2>Thanks for letting us know</h2>
-        <p id="noText">No problem — we've released your seat and offered it to the next guest on the waitlist. Hope to see you at the next one!</p>
-      </div>
-    </section>
+      <!-- ====================== YES → CONFIRMED ========================= -->
+      <section id="view-confirmed" class="center hidden">
+        <div class="glyph" style="border-color:rgba(61,208,160,.5);background:rgba(61,208,160,.12)">🎉</div>
+        <span class="pill pill--go">Seat confirmed</span>
+        <h2 class="state-head" id="cfTitle" style="color:#fff">You're all set!</h2>
+        <p class="muted fs-sm" id="cfLead">Looking forward to seeing you today at <b style="color:#fff">4:00 PM</b>.</p>
+        <p class="note" id="cfHint" style="margin-top:6px">When you arrive at Novo Cinemas, Doha Oasis, scan the entrance QR and enter your mobile to get your ticket.</p>
+      </section>
 
-    <!-- ============================ INVALID ========================== -->
-    <section class="card hidden" id="view-invalid">
-      <div class="hero">
-        <span class="emoji">🔗</span>
-        <h2>This link isn't valid</h2>
-        <p>This confirmation link is expired or incorrect. Please use the most recent message we sent you, or see a QNB Movie Night staff member.</p>
-      </div>
-    </section>
+      <!-- ============================ NO =============================== -->
+      <section id="view-no" class="center hidden">
+        <div class="glyph glyph--wait">💛</div>
+        <h2 class="state-head state-head--wait">Thanks for letting us know</h2>
+        <p class="muted fs-sm">No problem — we've released your seat and offered it to the next guest on the waitlist. Hope to see you at the next one!</p>
+      </section>
 
-    <!-- ============================ ERROR ============================ -->
-    <section class="card hidden" id="view-error">
-      <div class="hero">
-        <span class="emoji">📡</span>
-        <h2>No connection</h2>
-        <p>We couldn't reach the server. Check your signal and try again.</p>
-      </div>
-      <div class="btn-row"><button data-action="reload">Retry</button></div>
-    </section>
+      <!-- ============================ INVALID ========================== -->
+      <section id="view-invalid" class="center hidden">
+        <div class="glyph glyph--error">🔗</div>
+        <h2 class="state-head state-head--error">This link isn't valid</h2>
+        <p class="muted fs-sm">This confirmation link is expired or incorrect. Please use the most recent message we sent you, or see a QNB Movie Night staff member.</p>
+      </section>
 
-    <p class="footer-note">Having trouble? Find a QNB Movie Night staff member at the Novo Cinemas entrance.</p>
+      <!-- ============================ ERROR ============================ -->
+      <section id="view-error" class="center hidden">
+        <div class="glyph glyph--error">📡</div>
+        <h2 class="state-head state-head--error">No connection</h2>
+        <p class="muted fs-sm">We couldn't reach the server. Check your signal and try again.</p>
+        <button class="btn btn--ghost" data-action="reload">Retry</button>
+      </section>
+
+    </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
-  <script src="js/confirm.js?v=3"></script>
+  <script src="js/confirm.js?v=4"></script>
 </body>
 </html>

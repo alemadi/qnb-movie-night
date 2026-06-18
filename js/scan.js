@@ -37,7 +37,7 @@
   // ---- PIN gate ----------------------------------------------------------
   function renderDots() {
     var dots = $("pinDots").children;
-    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle("on", i < pin.length);
+    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle("is-on", i < pin.length);
   }
   function onKey(e) {
     var btn = e.target.closest("[data-key]");
@@ -97,8 +97,8 @@
       pinMsg("");
       showView("scan");
       $("reader").innerHTML =
-        '<div class="result invalid" style="padding:28px"><div class="ricon">📷</div>' +
-        '<h2>Camera unavailable</h2><p class="rmeta">Allow camera access in your browser and reload. ' +
+        '<div class="result result--bad" style="padding:28px"><div class="result__glyph">📷</div>' +
+        '<div class="result__head">Camera unavailable</div><p class="muted fs-sm" style="margin-top:6px">Allow camera access in your browser and reload. ' +
         'On iOS use Safari; on Android use Chrome.</p></div>';
     });
   }

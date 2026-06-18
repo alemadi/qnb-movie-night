@@ -3,97 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0e14" />
+  <meta name="theme-color" content="#0A1124" />
   <title>QNB Movie Night — Scanner</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=2" />
 </head>
 <body>
-  <div class="wrap scan-shell">
-    <div class="brand">
-      <div class="logo">🎟️</div>
-      <div>
-        <h1>QNB Movie Night — Scanner</h1>
-        <p>Organizer check-in · Toy Story 5</p>
+  <div class="app">
+    <header class="hero light-edge">
+      <div class="hero__glow"></div>
+      <div class="cobrand">
+        <span class="cobrand__qnb">QNB</span>
+        <span class="cobrand__x">×</span>
+        <span class="cobrand__novo" data-slot>NOVO</span>
       </div>
-    </div>
+      <h1 class="hero__title">Organizer Scanner</h1>
+      <span class="hero__chip">Check-in · Toy Story 5</span>
+    </header>
 
-    <!-- ============================ PIN GATE ========================== -->
-    <section class="card" id="view-pin">
-      <h2>Organizer access</h2>
-      <p class="lead">Enter the 4-digit organizer PIN to start scanning tickets.</p>
-      <div id="pinMsg" class="msg"></div>
-      <div class="pin-dots" id="pinDots">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      </div>
-      <div class="keypad" id="keypad">
-        <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
-        <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
-        <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
-        <button class="alt" data-key="clear">Clear</button>
-        <button data-key="0">0</button>
-        <button class="alt" data-key="back">⌫</button>
-      </div>
-    </section>
+    <main class="app__body">
 
-    <!-- ============================ SCANNING ========================== -->
-    <section class="hidden" id="view-scan">
-      <div class="toprow">
-        <span class="pin-ok">🔓 Unlocked · scanning</span>
-        <button class="secondary" data-action="lock">Lock</button>
-      </div>
-      <div id="reader"></div>
-      <div class="scan-status">Point the camera at a guest's ticket QR · <span class="live" id="scanCount">0 admitted</span></div>
-    </section>
+      <!-- ============================ PIN GATE ========================== -->
+      <section id="view-pin" class="stack" style="flex:1;justify-content:center">
+        <div class="tac">
+          <div class="eyebrow">Organizer access</div>
+          <h2 class="display" style="font-size:22px;margin-top:6px">Enter PIN</h2>
+          <p class="muted fs-sm" style="margin-top:6px">4-digit organizer PIN to start scanning.</p>
+        </div>
+        <div id="pinMsg" class="msg"></div>
+        <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+        <div class="keypad" id="keypad" style="margin-top:6px">
+          <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+          <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+          <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+          <button data-key="clear" class="mono" style="font-size:13px">Clear</button>
+          <button data-key="0">0</button>
+          <button data-key="back" style="font-size:20px">⌫</button>
+        </div>
+      </section>
 
-    <!-- ============================ RESULT ============================ -->
-    <section class="card hidden" id="view-result">
-      <div id="resultBody"><!-- filled by scan.js / preview --></div>
-      <div class="btn-row">
-        <button class="ok" data-action="next" id="nextBtn">Scan next ›</button>
-      </div>
-    </section>
+      <!-- ============================ SCANNING ========================== -->
+      <section id="view-scan" class="stack hidden" style="flex:1">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span class="pill pill--go">🔓 Scanning</span>
+          <button class="btn btn--ghost btn--sm" style="width:auto" data-action="lock">Lock</button>
+        </div>
+        <div class="scanview">
+          <div id="reader" style="width:100%;height:100%"></div>
+          <div class="reticle"><i></i><i></i><i></i><i></i></div>
+          <div class="scanline"></div>
+          <div class="scan-hint"><span class="mono" id="scanCount">0 ADMITTED</span>Point at a guest's ticket QR</div>
+        </div>
+      </section>
 
-    <p class="footer-note">PIN is held only for this session and never stored. Each scan is verified live by the server.</p>
+      <!-- ============================ RESULT ============================ -->
+      <section id="view-result" class="stack hidden" style="flex:1">
+        <div id="resultBody" style="flex:1;display:flex"></div>
+        <button class="btn btn--azure" data-action="next" id="nextBtn">Scan next ›</button>
+      </section>
+
+      <p class="muted fs-sm tac mt-auto" style="padding-top:14px">PIN is held only for this session. Every scan is verified live by the server.</p>
+    </main>
   </div>
 
   <!-- Result templates (cloned by scan.js) -->
   <template id="tpl-admit">
-    <div class="result admit">
-      <div class="ricon">✅</div>
-      <h2>Admit</h2>
-      <p class="rname" data-f="name">—</p>
-      <p class="rmeta"><b data-f="guests">—</b> guest(s)</p>
+    <div class="result result--go">
+      <div class="result__glyph">✅</div>
+      <div class="result__head">Admit</div>
+      <div class="result__name" data-f="name">—</div>
+      <div class="result__meta"><span><b data-f="guests">—</b> guest(s)</span></div>
       <div class="hall-pick">
-        <p class="hall-prompt" id="hallPrompt">Send them to:</p>
+        <div class="hall-prompt" id="hallPrompt">Send them to</div>
         <div class="hall-btns">
-          <button class="secondary" data-hall="Hall 3">Hall 3</button>
-          <button class="secondary" data-hall="Hall 4">Hall 4</button>
+          <button data-hall="Hall 3">Hall 3</button>
+          <button data-hall="Hall 4">Hall 4</button>
         </div>
       </div>
     </div>
   </template>
   <template id="tpl-already">
-    <div class="result already">
-      <div class="ricon">⚠️</div>
-      <h2>Already checked in</h2>
-      <p class="rname" data-f="name">—</p>
-      <p class="rmeta">Hall <b data-f="hall">—</b> · <b data-f="guests">—</b> guests</p>
-      <div class="when" data-f="when">Checked in earlier</div>
+    <div class="result result--warn">
+      <div class="result__glyph">⚠️</div>
+      <div class="result__head">Already checked in</div>
+      <div class="result__name" data-f="name">—</div>
+      <div class="result__meta"><span>Hall <b data-f="hall">—</b></span><span><b data-f="guests">—</b> guest(s)</span></div>
+      <div class="result__when" data-f="when">Checked in earlier</div>
     </div>
   </template>
   <template id="tpl-invalid">
-    <div class="result invalid">
-      <div class="ricon">✕</div>
-      <h2>Invalid ticket</h2>
-      <p class="rmeta">This QR isn't a valid Movie Night ticket. Ask the guest to open their ticket link again.</p>
+    <div class="result result--bad">
+      <div class="result__glyph">✕</div>
+      <div class="result__head">Invalid ticket</div>
+      <p class="muted fs-sm" style="margin-top:6px">This QR isn't a valid Movie Night ticket. Ask the guest to open their ticket link again.</p>
     </div>
   </template>
   <template id="tpl-offline">
-    <div class="result offline">
-      <div class="ricon">📡</div>
-      <h2>No connection</h2>
-      <p class="rmeta">Couldn't reach the server, so this guest was <b>not</b> checked in. Check the Wi-Fi and retry — no one is admitted or rejected on a network error.</p>
-      <div class="btn-row"><button data-action="retry">Retry</button></div>
+    <div class="result result--bad">
+      <div class="result__glyph">📡</div>
+      <div class="result__head">No connection</div>
+      <p class="muted fs-sm" style="margin-top:6px">Couldn't reach the server, so this guest was <b style="color:#fff">not</b> checked in. Check the Wi-Fi and retry — no one is admitted or rejected on a network error.</p>
+      <button class="btn btn--ghost" data-action="retry">Retry</button>
     </div>
   </template>
 
@@ -101,6 +113,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/scan.js?v=1"></script>
+  <script src="js/scan.js?v=2"></script>
 </body>
 </html>

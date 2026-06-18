@@ -3,130 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0e14" />
+  <meta name="theme-color" content="#0A1124" />
   <title>QNB Movie Night — Your Ticket</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=2" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="brand">
-      <div class="logo">🎬</div>
-      <div>
-        <h1>QNB Movie Night</h1>
-        <p>Toy Story 5 · Sat 20 June · 4:00 PM · Novo Cinemas, Doha Oasis</p>
+  <div class="app">
+    <header class="hero light-edge">
+      <div class="hero__glow"></div>
+      <div class="cobrand">
+        <span class="cobrand__qnb">QNB</span>
+        <span class="cobrand__x">×</span>
+        <span class="cobrand__novo" data-slot>NOVO</span>
       </div>
-    </div>
+      <h1 class="hero__title">Movie Night · Toy Story 5</h1>
+      <span class="hero__chip">Sat 20 June · 4:00 PM · Doha Oasis</span>
+    </header>
 
-    <!-- ============================ VERIFY ============================ -->
-    <section class="card" id="view-verify">
-      <h2>Find your ticket 🎟️</h2>
-      <p class="lead">Enter the mobile number you registered with and we'll pull up your seat.</p>
-      <div id="verifyMsg" class="msg"></div>
-      <form id="verifyForm" novalidate>
-        <div class="field">
-          <label for="mobile">Mobile number</label>
-          <div class="phone">
-            <span class="affix"><span class="flag">🇶🇦</span>+974</span>
-            <input type="tel" id="mobile" name="mobile" inputmode="numeric"
-                   autocomplete="tel-national" placeholder="5512 3456" maxlength="12" />
-          </div>
+    <main class="app__body">
+
+      <!-- ============================ VERIFY ============================ -->
+      <section id="view-verify" class="stack">
+        <div>
+          <div class="eyebrow">Your ticket</div>
+          <h2 class="display" style="font-size:24px;margin-top:6px">Find your seat 🎟️</h2>
+          <p class="muted fs-sm" style="margin-top:6px">Enter the mobile number you registered with and we'll pull up your pass.</p>
         </div>
-        <button type="submit" id="verifyBtn">Find my ticket</button>
-      </form>
-    </section>
-
-    <!-- ============================ LOADING =========================== -->
-    <section class="card hidden" id="view-loading">
-      <div class="center-spin"><div class="spinner dark"></div></div>
-      <p class="center muted">Looking up your booking…</p>
-    </section>
-
-    <!-- ========================== NOT FOUND =========================== -->
-    <section class="card hidden" id="view-notfound">
-      <div class="hero">
-        <span class="emoji">🔍</span>
-        <h2>We couldn't find that number</h2>
-        <p>No registration matches that mobile. Double-check the number you signed up with, or see a staff member at the entrance.</p>
-      </div>
-      <div class="btn-row">
-        <button class="secondary" data-action="reset">Try another number</button>
-      </div>
-    </section>
-
-    <!-- ========================== WAITLIST ============================ -->
-    <section class="card hidden" id="view-waitlist">
-      <div class="hero">
-        <span class="emoji">⏳</span>
-        <span class="badge-status waitlist">● Waitlist</span>
-        <h2 id="wlName">You're on the waitlist</h2>
-        <p>Your registration came in after the halls filled up. If a seat opens we'll be in touch — you can still come by the entrance on the night in case of no-shows.</p>
-      </div>
-      <div class="btn-row">
-        <button class="secondary" data-action="reset">Check another number</button>
-      </div>
-    </section>
-
-    <!-- ============================ TICKET ============================ -->
-    <section class="hidden" id="view-ticket">
-      <div id="offlineBanner" class="offline-pill hidden">⚠️ Offline — showing your saved ticket</div>
-
-      <div class="ticket">
-        <div class="strip"></div>
-        <div class="ticket-head">
-          <div class="poster">🍿</div>
-          <div>
-            <p class="evt-title">Toy Story 5</p>
-            <p class="evt-sub">Sat 20 June 2026 · 4:00 PM · Novo Cinemas, Doha Oasis</p>
+        <div id="verifyMsg" class="msg"></div>
+        <form id="verifyForm" class="stack" novalidate>
+          <div class="field">
+            <label class="label" for="mobile">Mobile number</label>
+            <div class="input-row">
+              <span class="input-row__cc">🇶🇦 +974</span>
+              <input type="tel" id="mobile" name="mobile" inputmode="numeric" autocomplete="tel-national" placeholder="5512 3456" maxlength="12" />
+            </div>
           </div>
-          <div class="admitted-stamp hidden" id="ticketAdmitted">CHECKED IN</div>
-        </div>
+          <button type="submit" id="verifyBtn" class="btn btn--primary">Find my ticket</button>
+        </form>
+      </section>
 
-        <div class="guest">
-          <p class="gname" id="tName">—</p>
-          <p class="gsub">Show this QR at the door</p>
-        </div>
+      <!-- ============================ LOADING =========================== -->
+      <section id="view-loading" class="center hidden">
+        <div class="spinner"></div>
+        <p class="muted fs-sm">Looking up your booking…</p>
+      </section>
 
-        <div class="meta">
-          <div class="cell">
-            <div class="k">Hall</div>
-            <div class="v" id="tHall">—</div>
+      <!-- ========================== NOT FOUND =========================== -->
+      <section id="view-notfound" class="center hidden">
+        <div class="glyph glyph--error">🔍</div>
+        <h2 class="state-head state-head--error">We couldn't find that number</h2>
+        <p class="muted fs-sm">No registration matches that mobile. Double-check the number you signed up with, or see a staff member at the entrance.</p>
+        <button class="btn btn--ghost" data-action="reset">Try another number</button>
+      </section>
+
+      <!-- ========================== WAITLIST ============================ -->
+      <section id="view-waitlist" class="center hidden">
+        <div class="glyph glyph--wait">⏳</div>
+        <span class="pill pill--warn">Waitlist</span>
+        <h2 class="state-head state-head--wait" id="wlName">You're on the waitlist</h2>
+        <p class="muted fs-sm">Your registration came in after the halls filled up. If a seat opens we'll be in touch — you can still come by the entrance on the night in case of no-shows.</p>
+        <button class="btn btn--ghost" data-action="reset">Check another number</button>
+      </section>
+
+      <!-- ============================ TICKET (VIP PASS) ================== -->
+      <section id="view-ticket" class="stack hidden">
+        <div id="offlineBanner" class="offline-pill hidden">⚠️ Offline — showing your saved pass</div>
+
+        <div class="pass">
+          <div class="pass__top">
+            <div class="pass__ev">QNB Movie Night · Toy Story 5</div>
+            <span class="pass__vip is-in hidden" id="ticketAdmitted">CHECKED IN</span>
+            <div class="pass__name" id="tName">—</div>
+            <div class="pass__cells">
+              <div class="pass__cell"><span>Hall</span><b class="is-text" id="tHall">—</b></div>
+              <div class="pass__cell"><span>Seats</span><b class="is-accent" id="tGuests">—</b></div>
+              <div class="pass__cell"><span>Ref</span><b class="is-text" id="tRef">—</b></div>
+            </div>
           </div>
-          <div class="cell">
-            <div class="k">Guests</div>
-            <div class="v" id="tGuests">—</div>
+          <div class="pass__perf"></div>
+          <div class="pass__bottom">
+            <div class="pass__qr"><div id="qrCanvas"></div></div>
+            <div style="flex:1;min-width:0">
+              <div class="pass__ref">Show this QR at the door</div>
+              <div class="barcode"></div>
+              <div class="pass__ref mono" id="tBarcodeRef" style="margin-top:8px">—</div>
+            </div>
           </div>
-          <div class="cell">
-            <div class="k">Ref</div>
-            <div class="v small" id="tRef">—</div>
-          </div>
+          <div class="pass__cred">Self-contained QR · works offline · screenshot to keep</div>
         </div>
 
-        <div class="perf"><span class="notch l"></span><span class="notch r"></span></div>
+        <button class="btn btn--azure" data-action="screenshot">📸 Save by screenshot</button>
+        <button class="btn btn--ghost" disabled>Add to wallet <span class="soon">SOON</span></button>
+        <button class="btn btn--ghost btn--sm" data-action="reset">Not you? Search again</button>
+      </section>
 
-        <div class="stub">
-          <div class="qr-box"><div id="qrCanvas"></div></div>
-          <p class="qr-hint">Screenshot this — it works even with no signal</p>
-          <div class="barcode"></div>
-          <div class="barcode-ref" id="tBarcodeRef">—</div>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="ok" data-action="screenshot">📸 Save by screenshot</button>
-        <button class="secondary" disabled>Add to wallet <span class="soon-tag">SOON</span></button>
-        <button class="ghost" data-action="reset">Not you? Search again</button>
-      </div>
-    </section>
-
-    <p class="footer-note">
-      Trouble loading your ticket? Find a QNB Movie Night staff member at the Novo Cinemas entrance.
-    </p>
+      <p class="muted fs-sm tac mt-auto" style="padding-top:18px">Trouble loading your pass? Find a QNB Movie Night staff member at the Novo Cinemas entrance.</p>
+    </main>
   </div>
 
   <!-- Libraries (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/verify.js?v=1"></script>
+  <script src="js/verify.js?v=2"></script>
 </body>
 </html>
