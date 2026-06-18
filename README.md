@@ -114,12 +114,15 @@ Mapping (auto-detected from headers, override-friendly):
 
 ## Day-of attendance confirmation + waitlist auto-promotion
 
-On the day, each confirmed guest is asked **"are you coming?"** (Yes/No):
-- **Yes** → they get their QR ticket.
-- **No** → their seat is released and `confirm_attendance()` **atomically promotes**
-  the earliest-RSVP waitlister whose party fits the freed seats into the same hall;
-  that person is then sent the same confirm step. Idempotent + race-safe
-  (`FOR UPDATE SKIP LOCKED`, so concurrent declines never promote the same person twice).
+On the day, each confirmed guest is asked **"are you coming?"**:
+- **Yes** → they confirm **how many of their booked seats** are actually coming
+  (reduce-only, in case part of their group cancelled) and get their QR ticket.
+  The door scanner and ticket then show the *confirmed* count.
+- **No** (or any released seats from a reduced Yes) → those seats are freed and
+  `confirm_attendance()` **atomically promotes** the earliest-RSVP waitlister whose
+  party fits the freed seats into the same hall; that person is then sent the same
+  confirm step. Idempotent + race-safe (`FOR UPDATE SKIP LOCKED`, so concurrent
+  declines never promote the same person twice).
 
 Same backend, two delivery options:
 

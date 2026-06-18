@@ -2,7 +2,8 @@
 // ----------------------------------------------------------------------------
 // Receives quick-reply button taps from the day-of "confirm attendance" template
 // and drives the same confirm_attendance() RPC the web page uses.
-//   yes:<token>  -> mark attending, reply with the guest's ticket link
+//   yes:<token>  -> reply with a link to the seat-picker page (the guest sets
+//                   how many seats they need there and gets their QR).
 //   no:<token>   -> decline + auto-promote a waitlister, then send THAT person
 //                   the same confirm template.
 //
@@ -82,23 +83,27 @@ async function handleAnswer(fromWaId: string, payload: string) {
   const m = /^(yes|no):(.+)$/i.exec(payload.trim());
   if (!m) return;
   const answer = m[1].toLowerCase(), token = m[2];
+  const base = env("PUBLIC_BASE_URL");
 
-  const { data, error } = await sb.rpc("confirm_attendance", { p_token: token, p_answer: answer });
+  // YES -> send a link to pick seat count + get the QR (finalised on the page,
+  // so the guest can release seats if part of their group cancelled).
+  if (answer === "yes") {
+    await waSend(textMsg(fromWaId,
+      `🎬 Great! Confirm how many seats you need and get your QR ticket here:\n${base}/confirm.html?t=${token}`));
+    return;
+  }
+
+  // NO -> decline immediately (frees the seat), then promote a waitlister.
+  const { data, error } = await sb.rpc("confirm_attendance", { p_token: token, p_answer: "no" });
   if (error) { console.error("confirm_attendance error", error); return; }
   const row = Array.isArray(data) ? data[0] : data;
   if (!row || !row.ok) { await waSend(textMsg(fromWaId, "Sorry, that confirmation link is no longer valid. Please see a staff member.")); return; }
 
-  const base = env("PUBLIC_BASE_URL");
-  if (row.result === "confirmed_yes") {
-    await waSend(textMsg(fromWaId,
-      `🎬 You're confirmed for QNB Movie Night — Toy Story 5!\nHall ${row.hall} · ${row.guest_count} guest(s).\nYour ticket QR: ${base}/confirm.html?t=${token}&go=yes`));
-  } else if (row.result === "declined") {
-    await waSend(textMsg(fromWaId, "Thanks for letting us know — your seat has been released. Hope to see you next time! 💛"));
-    if (row.promoted_found && row.promoted_wa_phone) {
-      await waSend(confirmTemplate(row.promoted_wa_phone, (row.promoted_name || "there").split(" ")[0], row.promoted_token));
-      await sb.from("guests").update({ confirm_sent_at: new Date().toISOString() })
-        .eq("ticket_token", row.promoted_token);
-    }
+  await waSend(textMsg(fromWaId, "Thanks for letting us know — your seat has been released. Hope to see you next time! 💛"));
+  if (row.promoted_found && row.promoted_wa_phone) {
+    await waSend(confirmTemplate(row.promoted_wa_phone, (row.promoted_name || "there").split(" ")[0], row.promoted_token));
+    await sb.from("guests").update({ confirm_sent_at: new Date().toISOString() })
+      .eq("ticket_token", row.promoted_token);
   }
 }
 

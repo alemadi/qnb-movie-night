@@ -348,6 +348,16 @@ button.ok { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0
 }
 .result .when { margin-top: 14px; font-size: 13px; color: var(--warn); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: var(--radius-sm); padding: 10px 12px; }
 
+/* seat stepper (confirm page) */
+.stepper { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 10px 0 2px; }
+.stepper .step-btn {
+  width: 58px; height: 58px; border-radius: 50%; flex: none;
+  font-size: 30px; font-weight: 700; line-height: 1; padding: 0;
+  background: var(--panel-2); border: 1px solid var(--border); color: var(--text); box-shadow: none;
+}
+.stepper .step-btn:disabled { opacity: .3; }
+.stepper .step-val { font-size: 46px; font-weight: 800; min-width: 72px; text-align: center; }
+
 /* spinner */
 .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.25); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 .spinner.dark { border-color: rgba(124,58,237,.25); border-top-color: var(--brand); }

@@ -111,7 +111,7 @@ begin
   end if;
 
   if g.status = 'confirmed' then
-    return query select true, g.status, g.name, g.guest_count, g.hall, g.ticket_token, g.checked_in;
+    return query select true, g.status, g.name, coalesce(g.confirmed_count, g.guest_count), g.hall, g.ticket_token, g.checked_in;
   else
     -- waitlist: no ticket, hall or party size exposed
     return query select true, g.status, g.name, null::int, null::text, null::uuid, g.checked_in;
@@ -173,7 +173,7 @@ begin
   returning * into g;
 
   if found then
-    return query select true, true, false, g.name, g.hall, g.guest_count, g.checked_in_at;
+    return query select true, true, false, g.name, g.hall, coalesce(g.confirmed_count, g.guest_count), g.checked_in_at;
     return;
   end if;
 
@@ -185,7 +185,7 @@ begin
     return;
   end if;
 
-  return query select true, true, true, g.name, g.hall, g.guest_count, g.checked_in_at;
+  return query select true, true, true, g.name, g.hall, coalesce(g.confirmed_count, g.guest_count), g.checked_in_at;
 end;
 $$;
 
@@ -211,22 +211,42 @@ alter table guests
   add column if not exists confirm_sent_at        timestamptz,  -- when the day-of ask was sent
   add column if not exists promoted_from_waitlist boolean not null default false,
   add column if not exists promoted_at            timestamptz,
-  add column if not exists wa_phone               text;          -- full WhatsApp number (cc+national)
+  add column if not exists wa_phone               text,          -- full WhatsApp number (cc+national)
+  add column if not exists confirmed_count        int;           -- seats confirmed day-of (<= guest_count)
 
 -- Qatari default for existing rows: 974 + last 8 digits.
 update guests set wa_phone = '974' || mobile where wa_phone is null;
 
--- confirm_attendance(token, 'yes'|'no')
---   Idempotent. On 'no', atomically promotes one fitting waitlister (FOR UPDATE
---   SKIP LOCKED so concurrent declines never promote the same person twice) and
---   returns their details so the caller can message them.
-create or replace function confirm_attendance(p_token text, p_answer text)
+-- Read-only lookup so the confirm page can greet by name, render a seat picker
+-- capped at the booked party size, and resume a prior answer.
+create or replace function get_confirm_info(p_token text)
+returns table (found boolean, name text, guest_count int, hall text, attendance text, confirmed_count int)
+language plpgsql security definer set search_path = public as $$
+declare v_token uuid; g guests%rowtype;
+begin
+  begin v_token := p_token::uuid; exception when others then
+    return query select false,null::text,null::int,null::text,null::text,null::int; return;
+  end;
+  select * into g from guests gr where gr.ticket_token = v_token and gr.status = 'confirmed';
+  if not found then
+    return query select false,null::text,null::int,null::text,null::text,null::int; return;
+  end if;
+  return query select true, g.name, g.guest_count, g.hall, g.attendance, g.confirmed_count;
+end; $$;
+
+-- confirm_attendance(token, 'yes'|'no', seats?)
+--   yes + seats -> attend with that many (clamped 1..booked); free the rest.
+--   no          -> free all booked seats.
+--   Any freed seats promote the earliest-RSVP waitlister who fits them
+--   (FOR UPDATE SKIP LOCKED so concurrent declines never double-promote).
+--   Idempotent: a second answer returns the existing state, no re-promotion.
+create or replace function confirm_attendance(p_token text, p_answer text, p_seats int default null)
 returns table (
   ok                   boolean,
   result               text,    -- 'confirmed_yes' | 'declined' | 'invalid'
   name                 text,
   hall                 text,
-  guest_count          int,
+  guest_count          int,     -- the CONFIRMED count on 'yes'
   ticket_token         uuid,    -- non-null only for 'yes' (their QR)
   promoted_found       boolean,
   promoted_token       uuid,
@@ -244,6 +264,8 @@ declare
   v_ans   text;
   g       guests%rowtype;
   w       guests%rowtype;
+  v_seats int;
+  v_freed int;
 begin
   v_ans := lower(trim(coalesce(p_answer, '')));
   if v_ans not in ('yes', 'no') then
@@ -267,7 +289,7 @@ begin
   -- Idempotent: already answered
   if g.attendance is not null then
     if g.attendance = 'yes' then
-      return query select true,'confirmed_yes',g.name,g.hall,g.guest_count,g.ticket_token,false,null::uuid,null::text,null::text,null::text,null::int;
+      return query select true,'confirmed_yes',g.name,g.hall,coalesce(g.confirmed_count,g.guest_count),g.ticket_token,false,null::uuid,null::text,null::text,null::text,null::int;
     else
       return query select true,'declined',g.name,g.hall,g.guest_count,null::uuid,false,null::uuid,null::text,null::text,null::text,null::int;
     end if;
@@ -275,35 +297,42 @@ begin
   end if;
 
   if v_ans = 'yes' then
-    update guests set attendance = 'yes', attendance_at = now() where id = g.id;
-    return query select true,'confirmed_yes',g.name,g.hall,g.guest_count,g.ticket_token,false,null::uuid,null::text,null::text,null::text,null::int;
-    return;
+    v_seats := least(greatest(coalesce(p_seats, g.guest_count), 1), g.guest_count);
+    update guests set attendance = 'yes', attendance_at = now(), confirmed_count = v_seats where id = g.id;
+    v_freed := g.guest_count - v_seats;
+  else
+    update guests set attendance = 'no', attendance_at = now(), confirmed_count = 0 where id = g.id;
+    v_freed := g.guest_count;
   end if;
 
-  -- v_ans = 'no': free the seat and promote the next fitting waitlister
-  update guests set attendance = 'no', attendance_at = now() where id = g.id;
+  -- Promote one waitlister that fits the freed seats
+  if v_freed > 0 then
+    select * into w from guests gr
+     where gr.status = 'waitlist'
+       and gr.attendance is null
+       and gr.guest_count <= v_freed
+     order by gr.created_at asc
+     for update skip locked
+     limit 1;
+    if found then
+      update guests
+         set status = 'confirmed', hall = g.hall,
+             promoted_from_waitlist = true, promoted_at = now()
+       where id = w.id;
+    end if;
+  end if;
 
-  select * into w from guests gr
-   where gr.status = 'waitlist'
-     and gr.attendance is null
-     and gr.guest_count <= g.guest_count
-   order by gr.created_at asc
-   for update skip locked
-   limit 1;
-
-  if found then
-    update guests
-       set status = 'confirmed', hall = g.hall,
-           promoted_from_waitlist = true, promoted_at = now()
-     where id = w.id;
-    return query select true,'declined',g.name,g.hall,g.guest_count,null::uuid,
-                        true, w.ticket_token, w.name, w.wa_phone, g.hall, w.guest_count;
+  if v_ans = 'yes' then
+    return query select true,'confirmed_yes',g.name,g.hall,v_seats,g.ticket_token,
+                        (w.id is not null), w.ticket_token, w.name, w.wa_phone, g.hall, w.guest_count;
   else
     return query select true,'declined',g.name,g.hall,g.guest_count,null::uuid,
-                        false,null::uuid,null::text,null::text,null::text,null::int;
+                        (w.id is not null), w.ticket_token, w.name, w.wa_phone, g.hall, w.guest_count;
   end if;
 end;
 $$;
 
-revoke all on function confirm_attendance(text, text) from public;
-grant execute on function confirm_attendance(text, text) to anon, authenticated;
+revoke all on function get_confirm_info(text) from public;
+revoke all on function confirm_attendance(text, text, int) from public;
+grant execute on function get_confirm_info(text) to anon, authenticated;
+grant execute on function confirm_attendance(text, text, int) to anon, authenticated;

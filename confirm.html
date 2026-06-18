@@ -21,13 +21,32 @@
     <section class="card" id="view-ask">
       <div class="hero">
         <span class="emoji">🎬</span>
-        <h2>It's tonight! Are you coming?</h2>
-        <p>Please confirm your seat for Toy Story 5. If you can't make it, we'll offer your seat to someone on the waitlist.</p>
+        <h2 id="askTitle">It's tonight! Are you coming?</h2>
+        <p id="askLead">Please confirm your seats for Toy Story 5. If your plans changed, you can release seats for the waitlist.</p>
       </div>
       <div id="askMsg" class="msg"></div>
       <div class="btn-row">
-        <button class="ok" data-answer="yes" id="yesBtn">✅ Yes, I'm coming</button>
+        <button class="ok" data-action="to-seats" id="yesBtn">✅ Yes, I'm coming</button>
         <button class="secondary" data-answer="no" id="noBtn">Sorry, I can't make it</button>
+      </div>
+    </section>
+
+    <!-- ============================ SEATS ============================= -->
+    <section class="card hidden" id="view-seats">
+      <div class="hero" style="margin-bottom:4px">
+        <span class="emoji">🪑</span>
+        <h2>How many are coming?</h2>
+        <p>You booked <b id="bookedN">—</b> seat(s). Set how many will actually come — release any you don't need and we'll pass them to the waitlist.</p>
+      </div>
+      <div class="stepper">
+        <button class="step-btn" data-step="-1" aria-label="one fewer">−</button>
+        <div class="step-val" id="seatVal">1</div>
+        <button class="step-btn" data-step="1" aria-label="one more">+</button>
+      </div>
+      <p class="center muted" id="freedNote" style="min-height:20px;margin-top:14px"></p>
+      <div class="btn-row">
+        <button class="ok" data-action="confirm-seats">Confirm <span id="seatBtnN"></span></button>
+        <button class="ghost" data-action="back-ask">Back</button>
       </div>
     </section>
 
