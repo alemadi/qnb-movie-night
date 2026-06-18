@@ -1,9 +1,9 @@
 /* QNB Movie Night — day-of attendance confirmation (web page)
-   Opened from a personal link: confirm.html?t=<ticket_token>
-     get_confirm_info(token) -> { found, name, guest_count, hall, attendance, confirmed_count }
-     confirm_attendance(token, 'yes'|'no', seats?) -> { ok, result, name, hall, guest_count, ... }
-   Confirming does NOT issue a ticket — guests get their QR ticket at the venue
-   entrance (scan the entrance QR -> enter mobile). Yes just confirms the seat.
+   Works two ways:
+     • Personal link  confirm.html?t=<ticket_token>  (skips straight to the ask)
+     • Shared link    confirm.html                    (guest enters their mobile)
+   Confirming does NOT issue a ticket — guests get their QR at the venue entrance
+   (scan the entrance QR -> enter mobile). Yes just confirms the seat.
 */
 (function () {
   "use strict";
@@ -18,10 +18,16 @@
   var seats = 1;     // current seat selection
 
   function $(id) { return document.getElementById(id); }
-  var views = ["ask", "seats", "loading", "confirmed", "no", "invalid", "error"];
+  var views = ["mobile", "ask", "seats", "loading", "confirmed", "no", "invalid", "error"];
   function show(name) {
     views.forEach(function (v) { var el = $("view-" + v); if (el) el.classList.toggle("hidden", v !== name); });
     window.scrollTo(0, 0);
+  }
+  function digits(s) { return String(s || "").replace(/\D/g, ""); }
+  function cmsg(text, kind) {
+    var m = $("cmobileMsg"); if (!m) return;
+    if (!text) { m.className = "msg"; m.textContent = ""; return; }
+    m.className = "msg show " + (kind || "error"); m.textContent = text;
   }
 
   function showConfirmed(g) {
@@ -47,12 +53,37 @@
       ? "Releasing " + freed + " seat" + (freed > 1 ? "s" : "") + " to the waitlist 💛" : "";
   }
 
-  async function loadInfo() {
-    if (!token) { show("invalid"); return; }
+  // shared-link entry: look the guest up by mobile, then drive the same flow
+  async function lookupMobile() {
+    if (!sb) { show("error"); return; }
+    var local = digits($("cmobile").value);
+    if (local.length < 7) { cmsg("Please enter your full mobile number.", "error"); return; }
+    cmsg("");
+    show("loading");
+    try {
+      var res = await sb.rpc("verify_guest", { p_mobile: "+974" + local });
+      if (res.error) throw res.error;
+      var row = Array.isArray(res.data) ? res.data[0] : res.data;
+      if (!row || !row.found) {
+        show("mobile");
+        cmsg("We couldn't find that number. Use the mobile you registered with, or see a staff member.", "error");
+        return;
+      }
+      if (row.status !== "confirmed" || !row.ticket_token) {
+        show("mobile");
+        cmsg("You're on the waitlist — we'll message you if a seat opens. 💛", "info");
+        return;
+      }
+      token = row.ticket_token;
+      loadInfo(token);
+    } catch (e) { console.error(e); show("error"); }
+  }
+
+  async function loadInfo(t) {
     if (!sb) { show("error"); return; }
     show("loading");
     try {
-      var res = await sb.rpc("get_confirm_info", { p_token: token });
+      var res = await sb.rpc("get_confirm_info", { p_token: t });
       if (res.error) throw res.error;
       info = Array.isArray(res.data) ? res.data[0] : res.data;
       if (!info || !info.found) { show("invalid"); return; }
@@ -104,10 +135,11 @@
     else if (a === "reload") { location.reload(); }
   }
 
-  // preview harness (?preview=ask|seats|yes|no|invalid|error)
+  // preview harness (?preview=mobile|ask|seats|yes|no|invalid|error)
   function preview(state) {
     info = { found: true, name: "Fatima Al-Naimi", guest_count: 3, hall: null, attendance: null, confirmed_count: null };
-    if (state === "ask") {
+    if (state === "mobile") show("mobile");
+    else if (state === "ask") {
       $("askTitle").textContent = "Fatima, are you joining us?";
       $("askLead").textContent = "Confirm your 3 seats for Toy Story 5 today. If your plans changed, you can release seats for the waitlist.";
       seats = 3; show("ask");
@@ -120,8 +152,12 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     document.body.addEventListener("click", onClick);
+    var form = $("cmobileForm");
+    if (form) form.addEventListener("submit", function (e) { e.preventDefault(); lookupMobile(); });
+
     var p = new URLSearchParams(location.search).get("preview");
     if (p) { preview(p); return; }
-    loadInfo();
+    if (token) { loadInfo(token); return; }
+    show("mobile");   // shared link — ask for the mobile number
   });
 })();

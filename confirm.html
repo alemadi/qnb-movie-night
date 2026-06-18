@@ -24,8 +24,26 @@
 
     <main class="app__body">
 
+      <!-- ===================== MOBILE ENTRY (shared link) =============== -->
+      <section id="view-mobile" class="center hidden">
+        <div class="glyph" style="border-color:rgba(77,141,255,.5);background:rgba(77,141,255,.12)">🎟️</div>
+        <h2 class="state-head" style="color:#fff">Confirm your seat</h2>
+        <p class="muted fs-sm">Enter the mobile number you registered with for QNB Movie Night.</p>
+        <div id="cmobileMsg" class="msg" style="width:100%"></div>
+        <form id="cmobileForm" class="stack" style="width:100%">
+          <div class="field" style="text-align:left">
+            <label class="label" for="cmobile">Mobile number</label>
+            <div class="input-row">
+              <span class="input-row__cc">🇶🇦 +974</span>
+              <input type="tel" id="cmobile" inputmode="numeric" autocomplete="tel-national" placeholder="5512 3456" maxlength="12" />
+            </div>
+          </div>
+          <button class="btn btn--primary" type="submit">Continue</button>
+        </form>
+      </section>
+
       <!-- ============================ ASK =============================== -->
-      <section id="view-ask" class="center">
+      <section id="view-ask" class="center hidden">
         <div class="glyph glyph--wait" style="border-color:rgba(77,141,255,.5);background:rgba(77,141,255,.12)">🎬</div>
         <h2 class="state-head" id="askTitle">It's today! Are you joining us?</h2>
         <p class="muted fs-sm" id="askLead">Please confirm your seats for Toy Story 5. If your plans changed, you can release seats for the waitlist.</p>
@@ -53,7 +71,7 @@
       </section>
 
       <!-- ============================ LOADING =========================== -->
-      <section id="view-loading" class="center hidden">
+      <section id="view-loading" class="center">
         <div class="spinner"></div>
         <p class="muted fs-sm">One moment…</p>
       </section>
@@ -95,6 +113,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/fx.js?v=1"></script>
-  <script src="js/confirm.js?v=5"></script>
+  <script src="js/confirm.js?v=6"></script>
 </body>
 </html>
