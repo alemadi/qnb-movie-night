@@ -78,6 +78,26 @@
     requestAnimationFrame(frame);
   }
 
+  function backdrop() {
+    if (document.querySelector(".bg-photo")) return;
+    var d = document.createElement("div"); d.className = "bg-photo";
+    document.body.appendChild(d);
+  }
+
+  // Live countdown to showtime (Sat 20 June 2026, 4:00 PM Qatar / UTC+3)
+  function countdown() {
+    var el = document.getElementById("countdown"); if (!el) return;
+    var target = new Date("2026-06-20T16:00:00+03:00").getTime();
+    function u(v, l) { return '<div class="cd-unit"><div class="cd-num">' + v + '</div><div class="cd-lbl">' + l + "</div></div>"; }
+    function tick() {
+      var diff = target - Date.now();
+      if (diff <= 0) { el.innerHTML = '<div class="cd-now">🎬 Now showing</div>'; return; }
+      var d = Math.floor(diff / 864e5), h = Math.floor(diff / 36e5) % 24, m = Math.floor(diff / 6e4) % 60;
+      el.innerHTML = u(d, "days") + '<div class="cd-sep">:</div>' + u(h, "hrs") + '<div class="cd-sep">:</div>' + u(m, "min");
+    }
+    tick(); setInterval(tick, 30000);
+  }
+
   window.QNBfx = { celebrate: celebrate };
-  document.addEventListener("DOMContentLoaded", function () { sparkles(); ripples(); });
+  document.addEventListener("DOMContentLoaded", function () { backdrop(); sparkles(); ripples(); countdown(); });
 })();

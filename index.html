@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=4" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
 </head>
 <body>
   <div class="app">
@@ -42,6 +42,13 @@
           </div>
           <button type="submit" id="verifyBtn" class="btn btn--primary">Find my ticket</button>
         </form>
+
+        <div class="evt-card">
+          <div class="evt-row"><span class="evt-ic">🍿</span><div><b>Toy Story 5</b><small>QNB Movie Night</small></div></div>
+          <div class="evt-row"><span class="evt-ic">📅</span><div><b>Saturday 20 June · 4:00 PM</b><small>Doors from 3:30 PM</small></div></div>
+          <div class="evt-row"><span class="evt-ic">📍</span><div><b>Novo Cinemas</b><small>Doha Oasis</small></div></div>
+          <div class="countdown" id="countdown"></div>
+        </div>
       </section>
 
       <!-- ============================ LOADING =========================== -->
@@ -107,7 +114,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/fx.js?v=1"></script>
+  <script src="js/fx.js?v=2"></script>
   <script src="js/verify.js?v=2"></script>
 </body>
 </html>
