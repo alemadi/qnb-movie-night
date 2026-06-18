@@ -93,9 +93,9 @@
       }
       if (info.attendance === "no") { show("no"); return; }
       var first = (info.name || "").split(" ")[0];
-      if (first) $("askTitle").textContent = first + ", are you joining us?";
-      $("askLead").textContent = "Confirm your " + info.guest_count + " seat" +
-        (info.guest_count > 1 ? "s" : "") + " for Toy Story 5 today. If your plans changed, you can release seats for the waitlist.";
+      if (first) $("askTitle").textContent = first + ", are you joining us today?";
+      $("askLead").textContent = "You have requested " + info.guest_count + " seat" +
+        (info.guest_count > 1 ? "s" : "") + ". If your plans changed, you can release them for your QNB colleagues — please confirm or adjust as needed.";
       seats = info.guest_count;
       show("ask");
     } catch (e) { console.error(e); show("error"); }
@@ -140,8 +140,8 @@
     info = { found: true, name: "Fatima Al-Naimi", guest_count: 3, hall: null, attendance: null, confirmed_count: null };
     if (state === "mobile") show("mobile");
     else if (state === "ask") {
-      $("askTitle").textContent = "Fatima, are you joining us?";
-      $("askLead").textContent = "Confirm your 3 seats for Toy Story 5 today. If your plans changed, you can release seats for the waitlist.";
+      $("askTitle").textContent = "Fatima, are you joining us today?";
+      $("askLead").textContent = "You have requested 3 seats. If your plans changed, you can release them for your QNB colleagues — please confirm or adjust as needed.";
       seats = 3; show("ask");
     } else if (state === "seats") { seats = 2; renderSeats(); show("seats"); }
     else if (state === "yes") showConfirmed({ name: "Fatima Al-Naimi", guest_count: 2 });

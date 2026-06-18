@@ -67,7 +67,7 @@ a{color:var(--azure);text-decoration:none}
 
 /* ---------- 5. QNB brand lockup ---------- */
 .cobrand{display:flex;align-items:center;justify-content:center;gap:11px}
-.cobrand__qnb{font-family:var(--font-display);font-weight:800;font-size:23px;letter-spacing:.04em;color:#fff}
+.cobrand__qnb{font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:.04em;color:#fff}
 .cobrand__tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--azure);
   border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 11px;background:rgba(77,141,255,.08)}
 
@@ -75,8 +75,8 @@ a{color:var(--azure);text-decoration:none}
 .hero{position:relative;padding:38px var(--sp-5) var(--sp-4);background:linear-gradient(180deg,var(--night),var(--midnight));overflow:hidden}
 .hero__glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:220px;height:130px;background:radial-gradient(ellipse,rgba(77,141,255,.32),transparent 70%);pointer-events:none}
 .hero > *{position:relative;z-index:2}
-.hero__title{font-family:var(--font-display);font-weight:700;font-size:18px;color:#fff;text-align:center;margin-top:var(--sp-3)}
-.hero__chip{display:block;text-align:center;font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:var(--azure);text-transform:uppercase;margin-top:var(--sp-1)}
+.hero__title{font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;text-align:center;margin-top:10px}
+.hero__chip{display:block;text-align:center;font-family:var(--font-body);font-weight:600;font-size:16px;letter-spacing:.01em;color:var(--platinum);margin-top:7px}
 
 /* ---------- 7. Buttons ---------- */
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border:none;border-radius:var(--r);
@@ -199,6 +199,7 @@ a{color:var(--azure);text-decoration:none}
 .mt-auto{margin-top:auto}
 .tac{text-align:center}
 .fs-sm{font-size:12.5px}
+.fs-lead{font-size:15.5px;line-height:1.55;color:var(--platinum)}
 @media (prefers-reduced-motion:reduce){.scanline,.spinner{animation:none}}
 
 /* ============================================================
