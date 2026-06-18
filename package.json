@@ -7,7 +7,8 @@
   "scripts": {
     "import": "node scripts/import.mjs",
     "import:dry": "node scripts/import.mjs --dry-run",
-    "import:commit": "node scripts/import.mjs --commit"
+    "import:commit": "node scripts/import.mjs --commit",
+    "links": "node scripts/links.mjs"
   },
   "engines": { "node": ">=18" },
   "dependencies": {

@@ -45,12 +45,17 @@ Two pages, one Supabase backend, zero server to babysit:
 ```
 index.html         verify flow + ticket (states from the design)
 scan.html          organizer scanner
+confirm.html       day-of "are you coming?" Yes/No page (opened from a link)
 css/styles.css     design tokens + components (dark cinema/ticket)
 js/config.js       Supabase URL + anon key only (public, committed)
 js/verify.js       mobile → verify_guest → render ticket + QR
 js/scan.js         PIN gate → html5-qrcode → check_in → result states
+js/confirm.js      token → confirm_attendance → ticket / waitlist-promoted
 db/schema.sql      locked schema (tables + RLS + RPCs) — apply as-is
 scripts/import.mjs Excel → Supabase (service-role; dry-run by default)
+scripts/links.mjs  export per-guest confirm links (links.csv)
+supabase/functions/wa-webhook   WhatsApp button webhook (Cloud API, dormant)
+supabase/functions/wa-send      WhatsApp day-of broadcast (Cloud API, dormant)
 .env.example       importer env template (.env is gitignored)
 ```
 
@@ -104,6 +109,64 @@ Mapping (auto-detected from headers, override-friendly):
 
 **Idempotent:** upsert on conflict `mobile`; re-running preserves each guest's
 `ticket_token`, `checked_in`, `checked_in_at`.
+
+---
+
+## Day-of attendance confirmation + waitlist auto-promotion
+
+On the day, each confirmed guest is asked **"are you coming?"** (Yes/No):
+- **Yes** → they get their QR ticket.
+- **No** → their seat is released and `confirm_attendance()` **atomically promotes**
+  the earliest-RSVP waitlister whose party fits the freed seats into the same hall;
+  that person is then sent the same confirm step. Idempotent + race-safe
+  (`FOR UPDATE SKIP LOCKED`, so concurrent declines never promote the same person twice).
+
+Same backend, two delivery options:
+
+### Option 1 — Web page (works today): `confirm.html?t=<token>`
+Send each guest their personal link; they tap Yes/No on a page we control — **no
+Meta approval needed**. Export the links from the DB:
+
+```bash
+npm install && cp .env.example .env     # add SUPABASE_SERVICE_ROLE_KEY
+node scripts/links.mjs --base https://alemadi.github.io/qnb-movie-night
+# writes links.csv: name, wa_phone, confirm_url, wa_me_link, hall, guest_count
+```
+
+`wa_me_link` opens WhatsApp to that guest with the message pre-filled — tap to send,
+or feed the CSV to any bulk-WhatsApp/mail-merge tool.
+
+### Option 2 — Native WhatsApp buttons (Meta Cloud API): ready, dormant
+Two Edge Functions are deployed and **locked until you set secrets**:
+`wa-webhook` (receives button taps, drives `confirm_attendance`, replies with the
+ticket link / promotes) and `wa-send` (broadcasts the template).
+
+> ⚠️ Your WhatsApp Business account is currently **under review/blocked**, so the
+> Cloud API can't send and a button template can't be approved until Meta clears
+> it. The functions are ready to switch on the moment that happens.
+
+**Activation runbook (once un-blocked):**
+1. **Template** — create one named `movie_confirm` (category *Utility*), body
+   `Hi {{1}}, it's QNB Movie Night (Toy Story 5) today! Please confirm your attendance.`
+   with two **Quick reply** buttons: `Yes, I'm coming` / `Can't make it`. Submit for approval.
+2. **Secrets** (Dashboard → Edge Functions → Manage secrets):
+   `WA_VERIFY_TOKEN`, `WA_APP_SECRET`, `WA_TOKEN`, `WA_PHONE_ID`,
+   `WA_TEMPLATE=movie_confirm`, `WA_TEMPLATE_LANG=en`,
+   `PUBLIC_BASE_URL=https://alemadi.github.io/qnb-movie-night`, `WA_SEND_SECRET=<random>`.
+3. **Webhook** — Meta → WhatsApp → Configuration → Callback URL
+   `https://tomfokjerpwoxgiqtdkd.supabase.co/functions/v1/wa-webhook`,
+   Verify Token = your `WA_VERIFY_TOKEN`; subscribe to the `messages` field.
+4. **Test to yourself first**:
+   ```bash
+   curl -X POST https://tomfokjerpwoxgiqtdkd.supabase.co/functions/v1/wa-send \
+     -H 'x-send-secret: <WA_SEND_SECRET>' -H 'content-type: application/json' \
+     -d '{"test_to":"9745xxxxxx","test_name":"You","test_token":"<a real confirmed token>"}'
+   ```
+5. **Broadcast** in batches: `-d '{"limit":20}'`, then `-d '{}'` for the rest.
+
+Button payloads carry `yes:<token>` / `no:<token>`; the webhook verifies Meta's
+`X-Hub-Signature-256` (HMAC-SHA256 of the raw body with `WA_APP_SECRET`) and ignores
+anything unsigned. Both functions deploy with `verify_jwt=false` by design.
 
 ---
 
