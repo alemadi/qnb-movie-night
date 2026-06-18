@@ -364,3 +364,37 @@ end; $$;
 
 revoke all on function set_hall(text, text, text) from public;
 grant execute on function set_hall(text, text, text) to anon, authenticated;
+
+-- ============================================================================
+-- Organizer dashboard (admin.html) — PIN-gated live counts + the list of guests
+-- auto-promoted from the waitlist who still need to confirm.
+-- ============================================================================
+create or replace function organizer_dashboard(p_pin text)
+returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_pin text; res jsonb;
+begin
+  select value into v_pin from app_config where key = 'organizer_pin';
+  if p_pin is null or v_pin is null or p_pin <> v_pin then
+    return jsonb_build_object('authorized', false);
+  end if;
+  select jsonb_build_object(
+    'authorized', true,
+    'confirmed',        (select count(*) from guests where status='confirmed'),
+    'confirmed_heads',  (select coalesce(sum(coalesce(confirmed_count,guest_count)),0) from guests where status='confirmed'),
+    'checked_in',       (select count(*) from guests where checked_in),
+    'checked_in_heads', (select coalesce(sum(coalesce(confirmed_count,guest_count)),0) from guests where checked_in),
+    'waitlist',         (select count(*) from guests where status='waitlist'),
+    'attending_yes',    (select count(*) from guests where attendance='yes'),
+    'declined',         (select count(*) from guests where attendance='no'),
+    'promoted_pending', (select coalesce(jsonb_agg(jsonb_build_object(
+                            'name', name, 'wa_phone', wa_phone,
+                            'seats', coalesce(confirmed_count,guest_count)
+                          ) order by promoted_at desc), '[]'::jsonb)
+                          from guests where promoted_from_waitlist = true and attendance is null)
+  ) into res;
+  return res;
+end; $$;
+
+revoke all on function organizer_dashboard(text) from public;
+grant execute on function organizer_dashboard(text) to anon, authenticated;

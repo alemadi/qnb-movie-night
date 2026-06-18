@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A1124" />
+  <title>QNB Movie Night — Organizer Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=5" />
+</head>
+<body>
+  <div class="app">
+    <header class="hero light-edge">
+      <div class="hero__glow"></div>
+      <div class="cobrand">
+        <span class="cobrand__qnb">QNB</span>
+        <span class="cobrand__tag">Blue Carpet</span>
+      </div>
+      <h1 class="hero__title">Organizer Dashboard</h1>
+      <span class="hero__chip">Live · Toy Story 5</span>
+    </header>
+
+    <main class="app__body">
+
+      <!-- PIN GATE -->
+      <section id="view-pin" class="stack" style="flex:1;justify-content:center">
+        <div class="tac">
+          <div class="eyebrow">Organizer access</div>
+          <h2 class="display" style="font-size:22px;margin-top:6px">Enter PIN</h2>
+        </div>
+        <div id="pinMsg" class="msg"></div>
+        <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+        <div class="keypad" id="keypad" style="margin-top:6px">
+          <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+          <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+          <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+          <button data-key="clear" class="mono" style="font-size:13px">Clear</button>
+          <button data-key="0">0</button>
+          <button data-key="back" style="font-size:20px">⌫</button>
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="view-dash" class="stack hidden">
+        <div class="statgrid">
+          <div class="stat go"><div class="num" id="sCheckedIn">0 <small id="sCheckedInHeads">/ 0</small></div><div class="lbl">Checked in</div></div>
+          <div class="stat cyan"><div class="num" id="sConfirmed">0 <small id="sConfirmedHeads">/ 0</small></div><div class="lbl">Confirmed</div></div>
+          <div class="stat"><div class="num" id="sYes">0</div><div class="lbl">Said yes</div></div>
+          <div class="stat warn"><div class="num" id="sDeclined">0</div><div class="lbl">Declined</div></div>
+        </div>
+
+        <div style="margin-top:8px">
+          <div class="section-h">⚡ Just promoted — notify them <span id="promoCount"></span></div>
+          <div id="promoList" class="stack"></div>
+        </div>
+
+        <div class="btn-row" style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+          <button class="btn btn--ghost" data-action="refresh">↻ Refresh</button>
+          <button class="btn btn--ghost btn--sm" data-action="lock">Lock</button>
+        </div>
+        <p class="muted fs-sm tac" id="lastUpdated" style="margin-top:6px"></p>
+      </section>
+
+      <p class="muted fs-sm tac mt-auto" style="padding-top:14px">Waitlist promotions are automatic. Tap “Notify” to send a promoted guest the confirm link.</p>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/fx.js?v=1"></script>
+  <script src="js/admin.js?v=1"></script>
+</body>
+</html>

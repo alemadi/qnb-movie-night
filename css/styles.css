@@ -246,6 +246,21 @@ a{color:var(--azure);text-decoration:none}
 .result__when{font-family:var(--font-mono);font-size:11px;color:var(--orange);background:rgba(232,132,60,.12);border:1px solid rgba(232,132,60,.4);border-radius:var(--r-sm);padding:8px 12px;margin-top:10px}
 .result .btn{margin-top:14px}
 
+/* organizer dashboard (admin.html) */
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stat .num{font-family:var(--font-display);font-weight:800;font-size:27px;color:#fff;line-height:1}
+.stat .num small{font-size:13px;color:var(--muted);font-weight:600}
+.stat .lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+.stat.go .num{color:var(--green)} .stat.cyan .num{color:var(--cyan)} .stat.warn .num{color:var(--orange)}
+.section-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--azure);margin:4px 0}
+.promo-row{display:flex;align-items:center;gap:12px;background:rgba(77,141,255,.08);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.promo-row .who{flex:1;min-width:0}
+.promo-row .who b{font-family:var(--font-display);font-weight:700;font-size:15px;color:#fff;display:block}
+.promo-row .who small{color:var(--muted);font-size:12px;font-family:var(--font-mono)}
+.promo-row a.notify{width:auto;flex:none;padding:11px 14px;font-size:13px;text-decoration:none;border-radius:var(--r-sm);background:var(--green);color:#06231a;font-weight:700}
+.empty-note{text-align:center;color:var(--muted);font-size:13px;padding:18px;border:1px dashed var(--line);border-radius:var(--r)}
+
 /* ============================================================
    16. Cinematic motion (fx.js pairs with this)
    ============================================================ */
