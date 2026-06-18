@@ -76,7 +76,7 @@
       }
       if (info.attendance === "no") { show("no"); return; }
       var first = (info.name || "").split(" ")[0];
-      if (first) $("askTitle").textContent = first + ", are you coming?";
+      if (first) $("askTitle").textContent = first + ", are you joining us?";
       $("askLead").textContent = "Confirm your " + info.guest_count + " seat" +
         (info.guest_count > 1 ? "s" : "") + " for Toy Story 5 tonight. If your plans changed, you can release seats for the waitlist.";
       seats = info.guest_count;
@@ -127,7 +127,7 @@
     var mock = { ok: true, result: "confirmed_yes", name: "Fatima Al-Naimi", hall: "Hall 4", guest_count: 2, ticket_token: "9214885b-0d26-474f-a7c9-6c0c4f939d3a" };
     info = { found: true, name: "Fatima Al-Naimi", guest_count: 3, hall: "Hall 4", attendance: null, confirmed_count: null };
     if (state === "ask") {
-      $("askTitle").textContent = "Fatima, are you coming?";
+      $("askTitle").textContent = "Fatima, are you joining us?";
       $("askLead").textContent = "Confirm your 3 seats for Toy Story 5 tonight. If your plans changed, you can release seats for the waitlist.";
       seats = 3; show("ask");
     } else if (state === "seats") { seats = 2; renderSeats(); show("seats"); }
