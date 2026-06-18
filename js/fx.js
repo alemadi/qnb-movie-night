@@ -1,0 +1,83 @@
+/* QNB Movie Night — cinematic motion (shared)
+   Adds floating light specks, button ripples, and a celebratory confetti burst.
+   Dependency-free. Honors prefers-reduced-motion. Exposes window.QNBfx.celebrate().
+*/
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function sparkles() {
+    if (reduce) return;
+    var layer = document.createElement("div");
+    layer.className = "fx-sparkles";
+    for (var i = 0; i < 14; i++) {
+      var s = document.createElement("i");
+      var size = (Math.random() * 2 + 1.5).toFixed(1);
+      s.style.left = (Math.random() * 100).toFixed(2) + "%";
+      s.style.width = s.style.height = size + "px";
+      s.style.animationDuration = (Math.random() * 9 + 9).toFixed(1) + "s";
+      s.style.animationDelay = (-Math.random() * 14).toFixed(1) + "s";
+      s.style.opacity = (Math.random() * 0.5 + 0.2).toFixed(2);
+      layer.appendChild(s);
+    }
+    document.body.appendChild(layer);
+  }
+
+  function ripples() {
+    document.addEventListener("pointerdown", function (e) {
+      var b = e.target.closest(".btn, .keypad button, .hall-btns button, .stepper button");
+      if (!b || b.disabled) return;
+      var rect = b.getBoundingClientRect();
+      var d = Math.max(rect.width, rect.height);
+      var r = document.createElement("span");
+      r.className = "fx-ripple";
+      r.style.width = r.style.height = d + "px";
+      r.style.left = (e.clientX - rect.left - d / 2) + "px";
+      r.style.top = (e.clientY - rect.top - d / 2) + "px";
+      if (getComputedStyle(b).position === "static") b.style.position = "relative";
+      b.style.overflow = "hidden";
+      b.appendChild(r);
+      setTimeout(function () { r.remove(); }, 650);
+    }, true);
+  }
+
+  var COLORS = ["#4D8DFF", "#5FE3E0", "#B5246F", "#EEF2FB"];
+  function celebrate() {
+    if (reduce) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var cv = document.createElement("canvas");
+    cv.className = "fx-confetti";
+    var W = cv.width = window.innerWidth * dpr, H = cv.height = window.innerHeight * dpr;
+    cv.style.width = window.innerWidth + "px"; cv.style.height = window.innerHeight + "px";
+    document.body.appendChild(cv);
+    var ctx = cv.getContext("2d");
+    var parts = [];
+    for (var i = 0; i < 90; i++) {
+      parts.push({
+        x: W * (0.5 + (Math.random() - 0.5) * 0.3), y: H * 0.32 + Math.random() * 20,
+        vx: (Math.random() - 0.5) * 10 * dpr, vy: (Math.random() * -8 - 4) * dpr, g: 0.32 * dpr,
+        w: (Math.random() * 6 + 4) * dpr, h: (Math.random() * 4 + 3) * dpr,
+        rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.4, c: COLORS[i % COLORS.length]
+      });
+    }
+    var t0 = performance.now(), DUR = 1500;
+    function frame(t) {
+      var el = t - t0;
+      ctx.clearRect(0, 0, W, H);
+      for (var k = 0; k < parts.length; k++) {
+        var p = parts[k];
+        p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vx *= 0.99;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - el / DUR);
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (el < DUR) requestAnimationFrame(frame); else cv.remove();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  window.QNBfx = { celebrate: celebrate };
+  document.addEventListener("DOMContentLoaded", function () { sparkles(); ripples(); });
+})();

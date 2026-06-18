@@ -31,6 +31,7 @@
     $("cfLead").innerHTML = (n != null ? ("Your <b>" + n + "</b> seat" + (n > 1 ? "s are" : " is") + " confirmed. ") : "") +
       "Looking forward to seeing you today at <b>4:00 PM</b>.";
     show("confirmed");
+    if (window.QNBfx) window.QNBfx.celebrate();
   }
 
   function renderSeats() {

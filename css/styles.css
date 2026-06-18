@@ -252,3 +252,51 @@ a{color:var(--azure);text-decoration:none}
 /* result extras */
 .result__when{font-family:var(--font-mono);font-size:11px;color:var(--orange);background:rgba(232,132,60,.12);border:1px solid rgba(232,132,60,.4);border-radius:var(--r-sm);padding:8px 12px;margin-top:10px}
 .result .btn{margin-top:14px}
+
+/* ============================================================
+   16. Cinematic motion (fx.js pairs with this)
+   ============================================================ */
+.app{position:relative;z-index:1}
+
+/* drifting aurora behind everything */
+body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38% 30% at 18% 22%,rgba(77,141,255,.20),transparent 60%),
+    radial-gradient(34% 26% at 82% 14%,rgba(95,227,224,.13),transparent 60%),
+    radial-gradient(46% 36% at 62% 88%,rgba(181,36,111,.12),transparent 60%);
+  filter:blur(22px);animation:aurora 20s ease-in-out infinite alternate}
+@keyframes aurora{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-3%,2%,0) scale(1.08)}100%{transform:translate3d(3%,-2%,0) scale(1.05)}}
+
+/* floating light specks (injected by fx.js) */
+.fx-sparkles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.fx-sparkles i{position:absolute;bottom:-12px;border-radius:50%;background:#cfeaff;box-shadow:0 0 7px rgba(95,227,224,.85);
+  animation-name:rise;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}12%{opacity:1}100%{transform:translateY(-106vh);opacity:0}}
+
+/* view entrance */
+.app__body > section:not(.hidden){animation:fadeUp .4s ease both}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(9px)}100%{opacity:1;transform:none}}
+
+/* VIP pass reveal + light-edge sweep + QR fade */
+.pass{animation:passIn .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes passIn{0%{opacity:0;transform:translateY(16px) scale(.965)}100%{opacity:1;transform:none}}
+.pass::before{background-size:220% 100%;animation:edgeSweep 2.4s ease-out 1,edgeGlow 3.4s ease-in-out infinite}
+@keyframes edgeSweep{0%{background-position:130% 0}100%{background-position:0 0}}
+@keyframes edgeGlow{0%,100%{opacity:.82}50%{opacity:1}}
+.pass__qr{animation:fadeIn .6s .25s both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* glyph pop on result / confirmed / states */
+.result__glyph,.glyph{animation:pop .42s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* button ripple (injected by fx.js) */
+.fx-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);pointer-events:none;animation:ripple .6s ease-out forwards}
+@keyframes ripple{to{transform:scale(2.4);opacity:0}}
+
+/* confetti canvas */
+.fx-confetti{position:fixed;inset:0;z-index:60;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){
+  body::before,.fx-sparkles,.app__body > section:not(.hidden),.pass,.pass::before,.pass__qr,.result__glyph,.glyph,.fx-ripple{animation:none}
+}

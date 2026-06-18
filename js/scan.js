@@ -152,6 +152,7 @@
     if (row.already_checked_in) { renderResult("already", row); return; }
     admitted += 1;
     renderResult("admit", row);
+    if (window.QNBfx) window.QNBfx.celebrate();
   }
 
   // ---- Result rendering --------------------------------------------------
