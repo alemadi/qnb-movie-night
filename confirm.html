@@ -13,7 +13,7 @@
       <div class="logo">🎬</div>
       <div>
         <h1>QNB Movie Night</h1>
-        <p>Toy Story 5 · Sat 20 June · Novo Cinemas, Doha Oasis</p>
+        <p>Toy Story 5 · Sat 20 June · 4:00 PM · Novo Cinemas, Doha Oasis</p>
       </div>
     </div>
 
@@ -56,39 +56,14 @@
       <p class="center muted">One moment…</p>
     </section>
 
-    <!-- ====================== YES → TICKET ============================ -->
-    <section class="hidden" id="view-ticket">
-      <div class="hero" style="margin-bottom:10px">
-        <span class="badge-status confirmed">● Attendance confirmed</span>
-      </div>
-      <div class="ticket">
-        <div class="strip"></div>
-        <div class="ticket-head">
-          <div class="poster">🍿</div>
-          <div>
-            <p class="evt-title">Toy Story 5</p>
-            <p class="evt-sub">Sat 20 June 2026 · Novo Cinemas, Doha Oasis</p>
-          </div>
-        </div>
-        <div class="guest">
-          <p class="gname" id="tName">—</p>
-          <p class="gsub">Show this QR at the door</p>
-        </div>
-        <div class="meta">
-          <div class="cell"><div class="k">Hall</div><div class="v" id="tHall">—</div></div>
-          <div class="cell"><div class="k">Guests</div><div class="v" id="tGuests">—</div></div>
-          <div class="cell"><div class="k">Ref</div><div class="v small" id="tRef">—</div></div>
-        </div>
-        <div class="perf"><span class="notch l"></span><span class="notch r"></span></div>
-        <div class="stub">
-          <div class="qr-box"><div id="qrCanvas"></div></div>
-          <p class="qr-hint">Screenshot this — it works even with no signal</p>
-          <div class="barcode"></div>
-          <div class="barcode-ref" id="tBarcodeRef">—</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="ok" data-action="screenshot">📸 Save by screenshot</button>
+    <!-- ====================== YES → CONFIRMED ========================= -->
+    <section class="card hidden" id="view-confirmed">
+      <div class="hero">
+        <span class="emoji">🎉</span>
+        <span class="badge-status confirmed">● Seat confirmed</span>
+        <h2 id="cfTitle">You're all set!</h2>
+        <p id="cfLead">Looking forward to seeing you today at <b>4:00 PM</b>.</p>
+        <p class="muted" id="cfHint" style="margin-top:14px">When you arrive at Novo Cinemas, Doha Oasis, scan the <b>entrance QR</b> and enter your mobile to get your ticket.</p>
       </div>
     </section>
 
@@ -124,8 +99,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/confirm.js?v=2"></script>
+  <script src="js/confirm.js?v=3"></script>
 </body>
 </html>
