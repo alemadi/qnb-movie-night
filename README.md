@@ -90,11 +90,13 @@ It is **dry-run by default** and writes nothing until you pass `--commit`.
 npm install
 cp .env.example .env          # add SUPABASE_SERVICE_ROLE_KEY
 
-# 1) Dry-run: prints column mapping, first 5 normalised rows, confirmed/waitlist counts
-node scripts/import.mjs --file rsvp.xlsx --hall3 120 --hall4 120
+# Export the RSVP sheet's "Form Responses 1" tab as .xlsx (File ▸ Download ▸ .xlsx)
 
-# 2) Once the mapping looks right:
-node scripts/import.mjs --file rsvp.xlsx --hall3 120 --hall4 120 --commit
+# 1) Dry-run: prints column mapping, first 5 normalised rows, counts (writes nothing)
+node scripts/import.mjs --file rsvp.xlsx --sheet "Form Responses 1"
+
+# 2) Once the mapping looks right, write it:
+node scripts/import.mjs --file rsvp.xlsx --sheet "Form Responses 1" --commit
 ```
 
 Mapping (auto-detected from headers, override-friendly):
@@ -104,11 +106,15 @@ Mapping (auto-detected from headers, override-friendly):
 | `name` | *Full Name* (falls back to a name derived from *Work Email* when blank/`Yes`/`No`) |
 | `mobile` | *Personal Mobile Number* (falls back to *Office Extension Number* if it's a valid 8-digit mobile) |
 | `guest_count` | *Total number attending (including you)* — **total party incl. the employee** |
-| attending | *Will you be attending?* — only an explicit **No** is excluded |
-| `hall` / `status` | assigned by **capacity** (Hall 3 → Hall 4 → waitlist), in sheet order |
+| attending | excluded only if *Will you be attending?* **or** the *Full Name* cell is an explicit **No** |
+| `hall` / `status` | **GATE mode (default):** everyone attending → `confirmed`, **hall unassigned** (assigned at the door scanner). Pass `--hall3 N --hall4 N` to instead pre-allocate by capacity (Hall 3 → Hall 4 → waitlist). |
 
 **Idempotent:** upsert on conflict `mobile`; re-running preserves each guest's
-`ticket_token`, `checked_in`, `checked_in_at`.
+`ticket_token`, `checked_in`, `checked_in_at` (but does reset `name`, `guest_count`,
+`status`, `hall` from the sheet — so don't re-run mid-event after halls are assigned).
+
+At the door, the scanner shows **Hall 3 / Hall 4** buttons on each valid scan;
+tapping one records the hall on that guest (`set_hall`, PIN-gated).
 
 ---
 

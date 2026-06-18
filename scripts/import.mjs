@@ -48,8 +48,15 @@ const COMMIT = argv.includes("--commit");
 const DRY = !COMMIT; // dry-run unless --commit
 const FILE = String(flag("file", "guests.xlsx"));
 const SHEET = flag("sheet", null);
-const HALL3_CAP = Number(flag("hall3", 999999));
-const HALL4_CAP = Number(flag("hall4", 999999));
+// Hall capacities are OPTIONAL. If neither is given we run in GATE mode:
+// everyone attending is imported as confirmed with NO pre-assigned hall, and
+// the hall is chosen at the door scanner. Provide --hall3 N --hall4 N to instead
+// pre-allocate by capacity (Hall 3, then Hall 4, then waitlist).
+const _h3 = flag("hall3", null);
+const _h4 = flag("hall4", null);
+const HALL3_CAP = _h3 != null && _h3 !== true ? Number(_h3) : null;
+const HALL4_CAP = _h4 != null && _h4 !== true ? Number(_h4) : null;
+const GATE_MODE = HALL3_CAP == null || HALL4_CAP == null;
 const HALL3_NAME = String(flag("hall3-name", "Hall 3"));
 const HALL4_NAME = String(flag("hall4-name", "Hall 4"));
 
@@ -130,10 +137,12 @@ function pickCount(row) {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 function isAttending(row) {
-  if (!colAttend) return true;
-  const v = String(row[colAttend] || "").trim().toLowerCase();
-  // Column is unreliable in this sheet (often blank); only an explicit "No" excludes.
-  return v !== "no";
+  // In early form responses the Yes/No answer landed in the *Full Name* column,
+  // so check both. Only an explicit "No" (in either) excludes; blanks count as
+  // attending (most rows leave the attending column empty).
+  const a = String(row[colAttend] || "").trim().toLowerCase();
+  const n = colName ? String(row[colName] || "").trim().toLowerCase() : "";
+  return a !== "no" && n !== "no";
 }
 
 const seen = new Set();
@@ -157,14 +166,21 @@ for (const row of rows) {
 }
 
 // ---------------------------------------------------------------------------
-// Hall allocation by capacity (Hall 3 then Hall 4; overflow -> waitlist)
-// Allocation is by SEATS (guest_count), in sheet order.
+// Status / hall assignment.
+//   GATE mode (default): everyone attending is confirmed, hall left NULL — the
+//     door scanner assigns Hall 3/4 on arrival.
+//   Capacity mode (--hall3 N --hall4 N): fill Hall 3, then Hall 4 (by seats, in
+//     RSVP order); the overflow becomes waitlist.
 // ---------------------------------------------------------------------------
 let used3 = 0, used4 = 0;
-for (const g of guests) {
-  if (used3 + g.guest_count <= HALL3_CAP) { g.status = "confirmed"; g.hall = HALL3_NAME; used3 += g.guest_count; }
-  else if (used4 + g.guest_count <= HALL4_CAP) { g.status = "confirmed"; g.hall = HALL4_NAME; used4 += g.guest_count; }
-  else { g.status = "waitlist"; g.hall = null; }
+if (GATE_MODE) {
+  for (const g of guests) { g.status = "confirmed"; g.hall = null; }
+} else {
+  for (const g of guests) {
+    if (used3 + g.guest_count <= HALL3_CAP) { g.status = "confirmed"; g.hall = HALL3_NAME; used3 += g.guest_count; }
+    else if (used4 + g.guest_count <= HALL4_CAP) { g.status = "confirmed"; g.hall = HALL4_NAME; used4 += g.guest_count; }
+    else { g.status = "waitlist"; g.hall = null; }
+  }
 }
 
 const confirmed = guests.filter((g) => g.status === "confirmed");
@@ -186,8 +202,10 @@ log(`    mobile       <- ${colMobile || "(none!)"}${colExt ? `  (fallback: ${col
 log(`    guest_count  <- ${colCount || "(default 1)"}`);
 log(`    attending    <- ${colAttend || "(all attending)"}`);
 log(`    email        <- ${colEmail || "(none)"}`);
-log("\n  Hall capacity:");
-log(`    ${HALL3_NAME}: ${HALL3_CAP === 999999 ? "∞ (set --hall3 N)" : HALL3_CAP} seats  |  ${HALL4_NAME}: ${HALL4_CAP === 999999 ? "∞ (set --hall4 N)" : HALL4_CAP} seats`);
+log("\n  Hall assignment:");
+log(GATE_MODE
+  ? `    GATE mode — everyone confirmed, hall assigned at the door (set --hall3 N --hall4 N to pre-allocate instead)`
+  : `    Capacity mode — ${HALL3_NAME}: ${HALL3_CAP} seats  |  ${HALL4_NAME}: ${HALL4_CAP} seats  (overflow -> waitlist)`);
 
 log("\n  First 5 normalised rows:");
 log("    " + ["mobile".padEnd(10), "count", "hall".padEnd(8), "status".padEnd(10), "name"].join("  "));
@@ -223,6 +241,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
 
 const payload = guests.map(({ mobile, name, guest_count, status, hall }) => ({
   mobile, name, guest_count, status, hall,
+  wa_phone: "974" + mobile, // Qatari E.164 (cc + national) for WhatsApp / links
 }));
 
 log(`\n  Upserting ${payload.length} guests (on conflict: mobile, preserving token/check-in)…`);

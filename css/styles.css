@@ -348,6 +348,15 @@ button.ok { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0
 }
 .result .when { margin-top: 14px; font-size: 13px; color: var(--warn); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: var(--radius-sm); padding: 10px 12px; }
 
+/* hall chooser on the scanner admit result */
+.hall-pick { margin-top: 18px; }
+.hall-pick .hall-prompt { color: var(--muted); font-size: 13px; margin: 0 0 10px; }
+.hall-pick .hall-prompt.done { color: #86efac; font-weight: 700; }
+.hall-btns { display: flex; gap: 10px; }
+.hall-btns button { flex: 1; font-size: 18px; padding: 16px 0; }
+.hall-btns button.selected { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; border-color: transparent; box-shadow: 0 8px 20px var(--brand-glow); }
+.hall-btns button.dim { opacity: .4; }
+
 /* seat stepper (confirm page) */
 .stepper { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 10px 0 2px; }
 .stepper .step-btn {

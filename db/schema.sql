@@ -336,3 +336,31 @@ revoke all on function get_confirm_info(text) from public;
 revoke all on function confirm_attendance(text, text, int) from public;
 grant execute on function get_confirm_info(text) to anon, authenticated;
 grant execute on function confirm_attendance(text, text, int) to anon, authenticated;
+
+-- ============================================================================
+-- Hall assignment at the door (gate mode)
+-- ----------------------------------------------------------------------------
+-- Guests are imported with no pre-assigned hall; the scanner assigns Hall 3/4
+-- when they check in. set_hall is PIN-gated and records the chosen hall.
+-- ============================================================================
+create or replace function set_hall(p_token text, p_pin text, p_hall text)
+returns table (ok boolean, authorized boolean, name text, hall text)
+language plpgsql security definer set search_path = public as $$
+declare v_pin text; v_token uuid; g guests%rowtype;
+begin
+  select value into v_pin from app_config where key = 'organizer_pin';
+  if p_pin is null or v_pin is null or p_pin <> v_pin then
+    return query select false, false, null::text, null::text; return;
+  end if;
+  begin v_token := p_token::uuid; exception when others then
+    return query select false, true, null::text, null::text; return;
+  end;
+  update guests set hall = p_hall where ticket_token = v_token and status = 'confirmed' returning * into g;
+  if not found then
+    return query select false, true, null::text, null::text; return;
+  end if;
+  return query select true, true, g.name, g.hall;
+end; $$;
+
+revoke all on function set_hall(text, text, text) from public;
+grant execute on function set_hall(text, text, text) to anon, authenticated;

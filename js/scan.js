@@ -182,7 +182,38 @@
   }
 
   // ---- actions -----------------------------------------------------------
+  async function assignHall(hall, btn) {
+    var thePin = pin || (function () { try { return sessionStorage.getItem(PIN_KEY) || ""; } catch (_) { return ""; } })();
+    if (!sb || !lastToken) return;
+    var btns = btn.parentNode.querySelectorAll("[data-hall]");
+    btns.forEach(function (b) { b.disabled = true; });
+    try {
+      var res = await sb.rpc("set_hall", { p_token: lastToken, p_pin: thePin, p_hall: hall });
+      if (res.error) throw res.error;
+      var row = Array.isArray(res.data) ? res.data[0] : res.data;
+      var prompt = $("hallPrompt");
+      if (row && row.ok) {
+        btns.forEach(function (b) {
+          b.classList.toggle("selected", b.getAttribute("data-hall") === hall);
+          b.classList.toggle("dim", b.getAttribute("data-hall") !== hall);
+          b.disabled = false;
+        });
+        if (prompt) { prompt.textContent = "✓ Sent to " + hall; prompt.classList.add("done"); }
+      } else {
+        if (prompt) prompt.textContent = "Couldn't save — tap again";
+        btns.forEach(function (b) { b.disabled = false; });
+      }
+    } catch (err) {
+      console.error(err);
+      var p = $("hallPrompt");
+      if (p) p.textContent = "No connection — tap again";
+      btns.forEach(function (b) { b.disabled = false; });
+    }
+  }
+
   function onClick(e) {
+    var hallBtn = e.target.closest("[data-hall]");
+    if (hallBtn) { assignHall(hallBtn.getAttribute("data-hall"), hallBtn); return; }
     var act = e.target.closest("[data-action]");
     if (!act) return;
     var a = act.getAttribute("data-action");
