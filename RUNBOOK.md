@@ -14,7 +14,7 @@
 Base: `https://alemadi.github.io/qnb-movie-night`
 
 ## Headcount
-- **Confirmed:** 75 bookings / **235 seats**
+- **Confirmed:** 76 bookings / **237 seats**
 - **Waitlist:** 154 bookings / 442 seats
 - **Halls:** Hall 3 + Hall 4 — assigned at the gate during scanning (no pre-assignment)
 
