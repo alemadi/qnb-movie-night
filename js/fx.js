@@ -98,6 +98,28 @@
     tick(); setInterval(tick, 30000);
   }
 
-  window.QNBfx = { celebrate: celebrate };
+  // Add-to-calendar: universal .ics (iOS opens Calendar, Android opens Google Cal).
+  // Showtime 4:00 PM Qatar (+03) = 13:00 UTC; end 6:30 PM = 15:30 UTC.
+  function addToCalendar() {
+    var ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//QNB Movie Night//EN", "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:qnb-movie-night-toystory5@alemadi.github.io",
+      "DTSTAMP:20260619T000000Z",
+      "DTSTART:20260620T130000Z",
+      "DTEND:20260620T153000Z",
+      "SUMMARY:QNB Movie Night — Toy Story 5",
+      "LOCATION:Novo Cinemas, Doha Oasis",
+      "DESCRIPTION:Doors from 3:30 PM. Show your QR ticket at the entrance.",
+      "END:VEVENT", "END:VCALENDAR"
+    ].join("\r\n");
+    var url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url; a.download = "qnb-movie-night.ics";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 1000);
+  }
+
+  window.QNBfx = { celebrate: celebrate, addToCalendar: addToCalendar };
   document.addEventListener("DOMContentLoaded", function () { backdrop(); sparkles(); ripples(); countdown(); });
 })();

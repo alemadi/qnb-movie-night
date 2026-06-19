@@ -134,6 +134,8 @@
       // brief visual cue; the actual capture is the phone's screenshot gesture
       act.textContent = "📸 Take your screenshot now";
       setTimeout(function () { act.textContent = "📸 Save by screenshot"; }, 2200);
+    } else if (a === "cal") {
+      if (window.QNBfx) window.QNBfx.addToCalendar();
     }
   }
 

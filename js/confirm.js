@@ -142,6 +142,7 @@
     if (a === "to-seats") { seats = info ? info.guest_count : 1; renderSeats(); show("seats"); }
     else if (a === "back-ask") { show("ask"); }
     else if (a === "confirm-seats") { submit("yes", seats); }
+    else if (a === "cal") { if (window.QNBfx) window.QNBfx.addToCalendar(); }
     else if (a === "reload") { location.reload(); }
   }
 
