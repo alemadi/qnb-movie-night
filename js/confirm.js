@@ -24,6 +24,16 @@
     window.scrollTo(0, 0);
   }
   function digits(s) { return String(s || "").replace(/\D/g, ""); }
+
+  // Friendly, timezone-safe date wording (event: Sat 20 June 2026, Qatar +03).
+  // Works whenever the link is opened: "today" on the day, else "tomorrow"/date.
+  function daysToEvent() {
+    var q = new Date(Date.now() + 3 * 3600000);                 // shift to Qatar wall-clock
+    var today = Date.UTC(q.getUTCFullYear(), q.getUTCMonth(), q.getUTCDate());
+    return Math.round((Date.UTC(2026, 5, 20) - today) / 86400000);
+  }
+  function whenWord() { var d = daysToEvent(); return d <= 0 ? "today" : d === 1 ? "tomorrow" : "on Saturday 20 June"; }
+  function whenChip() { var d = daysToEvent(); return d <= 0 ? "Today" : d === 1 ? "Tomorrow" : "Sat 20 June"; }
   function cmsg(text, kind) {
     var m = $("cmobileMsg"); if (!m) return;
     if (!text) { m.className = "msg"; m.textContent = ""; return; }
@@ -35,7 +45,7 @@
     $("cfTitle").textContent = first ? ("You're all set, " + first + "!") : "You're all set!";
     var n = g && g.guest_count != null ? g.guest_count : null;
     $("cfLead").innerHTML = (n != null ? ("Your <b>" + n + "</b> seat" + (n > 1 ? "s are" : " is") + " confirmed. ") : "") +
-      "Looking forward to seeing you today at <b>4:00 PM</b>.";
+      "Looking forward to seeing you " + whenWord() + " at <b>4:00 PM</b>.";
     show("confirmed");
     if (window.QNBfx) window.QNBfx.celebrate();
   }
@@ -93,7 +103,7 @@
       }
       if (info.attendance === "no") { show("no"); return; }
       var first = (info.name || "").split(" ")[0];
-      if (first) $("askTitle").textContent = first + ", are you joining us today?";
+      if (first) $("askTitle").textContent = first + ", are you joining us " + whenWord() + "?";
       $("askLead").textContent = "You have requested " + info.guest_count + " seat" +
         (info.guest_count > 1 ? "s" : "") + ". If your plans changed, you can release them for your QNB colleagues — please confirm or adjust as needed.";
       seats = info.guest_count;
@@ -140,7 +150,7 @@
     info = { found: true, name: "Fatima Al-Naimi", guest_count: 3, hall: null, attendance: null, confirmed_count: null };
     if (state === "mobile") show("mobile");
     else if (state === "ask") {
-      $("askTitle").textContent = "Fatima, are you joining us today?";
+      $("askTitle").textContent = "Fatima, are you joining us " + whenWord() + "?";
       $("askLead").textContent = "You have requested 3 seats. If your plans changed, you can release them for your QNB colleagues — please confirm or adjust as needed.";
       seats = 3; show("ask");
     } else if (state === "seats") { seats = 2; renderSeats(); show("seats"); }
@@ -151,6 +161,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    var chip = $("cChip"); if (chip) chip.textContent = whenChip() + " · 4:00 PM · Doha Oasis";
     document.body.addEventListener("click", onClick);
     var form = $("cmobileForm");
     if (form) form.addEventListener("submit", function (e) { e.preventDefault(); lookupMobile(); });
