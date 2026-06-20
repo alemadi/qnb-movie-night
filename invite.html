@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0A1124" />
+<title>QNB Movie Night — A Personal Invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--gold:#E6C56C;--gold2:#C9A24B;--navy:#0A1124;--platinum:#EAF0FF;--cyan:#5FE3E0}
+  html,body{min-height:100%}
+  body{font-family:"Inter",sans-serif;color:var(--platinum);min-height:100vh;display:flex;justify-content:center;padding:18px;
+    background:
+      radial-gradient(700px 380px at 50% -6%, rgba(230,197,108,.16), transparent 62%),
+      radial-gradient(640px 460px at 50% 112%, rgba(77,141,255,.14), transparent 60%),
+      linear-gradient(180deg,#0C1430,#0A1124 45%,#070B18)}
+  .card{position:relative;width:100%;max-width:520px;margin:auto;padding:44px 30px 36px;text-align:center;
+    border:1px solid rgba(230,197,108,.45);border-radius:16px;background:rgba(8,12,26,.35);overflow:hidden}
+  .bg{position:absolute;inset:0;background:url("img/backdrop.jpg") center/cover;opacity:.14;mix-blend-mode:screen;pointer-events:none}
+  .card>section,.card>.spin{position:relative;z-index:1}
+  .qnb{font-family:"Playfair Display",serif;font-weight:700;font-size:34px;letter-spacing:.06em;color:#fff}
+  .qnb-sub{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-top:8px}
+  .rule{width:84px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto}
+  .eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:rgba(234,240,255,.7)}
+  .name{font-family:"Playfair Display",serif;font-style:italic;font-weight:600;font-size:58px;line-height:1.05;margin-top:8px;
+    background:linear-gradient(180deg,#fff,#F4E3B0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .role{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-top:10px}
+  .star{color:var(--gold);letter-spacing:10px;margin:16px 0;font-size:15px}
+  .lead{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:21px;color:rgba(234,240,255,.92);line-height:1.45;max-width:400px;margin:0 auto}
+  .feature{font-family:"Playfair Display",serif;font-weight:700;font-size:32px;color:#fff;margin-top:10px}
+  .det{margin:20px auto 0;max-width:360px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+  .det .r{display:flex;gap:10px;align-items:center;justify-content:center}
+  .det b{color:#fff;font-weight:600}.det .g{color:var(--gold);font-weight:600}
+  .actions{margin-top:24px;display:flex;flex-direction:column;gap:11px}
+  .btn{width:100%;padding:15px;border:none;border-radius:12px;font-family:"Inter",sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:filter .15s}
+  .btn:active{filter:brightness(.93)}
+  .btn-gold{background:linear-gradient(135deg,#E6C56C,#C9A24B);color:#2a1d02}
+  .btn-ghost{background:none;border:1px solid rgba(234,240,255,.25);color:var(--platinum)}
+  .btn-sm{padding:11px;font-size:13px}
+  .stepper{display:flex;align-items:center;justify-content:center;gap:20px;margin:16px 0}
+  .stepper button{width:54px;height:54px;border-radius:50%;border:1px solid rgba(230,197,108,.5);background:rgba(230,197,108,.08);color:var(--gold);font-size:26px;cursor:pointer;line-height:1}
+  .stepper button:disabled{opacity:.35}
+  .seatval{font-family:"Playfair Display",serif;font-size:48px;color:#fff;min-width:72px}
+  .muted{color:rgba(234,240,255,.6);font-size:13.5px}
+  .pill{display:inline-block;border:1px solid rgba(230,197,108,.5);border-radius:999px;padding:7px 16px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);background:rgba(230,197,108,.07)}
+  .glyph{font-size:46px;margin-bottom:4px}
+  .hidden{display:none!important}
+  .spin{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:var(--gold);animation:s 1s linear infinite;margin:34px auto}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style></head>
+<body>
+  <div class="card">
+    <div class="bg"></div>
+
+    <div id="v-load" class="spin"></div>
+
+    <!-- INVITATION -->
+    <section id="v-invite" class="hidden">
+      <div class="qnb">QNB</div><div class="qnb-sub">Movie Night</div>
+      <div class="rule"></div>
+      <div class="eyebrow">Cordially invites</div>
+      <div class="name" id="vName">Heba</div>
+      <div class="role" id="vRole">Senior Executive Vice President</div>
+      <div class="star">✦ ✦ ✦</div>
+      <div class="lead">as our Guest of Honour for an exclusive screening of</div>
+      <div class="feature">“Toy Story 5”</div>
+      <div class="det">
+        <div class="r">📅 <b>Saturday, 20 June 2026</b></div>
+        <div class="r">⏱️ Arrive <span class="g">4:00 PM</span> · Film <span class="g">4:30 PM</span></div>
+        <div class="r">📍 <b>Novo Cinemas · Doha Oasis</b></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-gold" data-act="accept">Accept with pleasure ✦</button>
+        <button class="btn btn-ghost btn-sm" data-act="decline">Respectfully decline</button>
+      </div>
+    </section>
+
+    <!-- SEATS -->
+    <section id="v-seats" class="hidden">
+      <div class="glyph">💺</div>
+      <div class="eyebrow">Reserve your seats</div>
+      <p class="muted" style="margin-top:10px">How many seats shall we hold in your name?</p>
+      <div class="stepper">
+        <button data-step="-1" aria-label="fewer">−</button>
+        <div class="seatval" id="seatVal">2</div>
+        <button data-step="1" aria-label="more">+</button>
+      </div>
+      <div class="actions">
+        <button class="btn btn-gold" data-act="confirm">Reserve <span id="seatN"></span></button>
+        <button class="btn btn-ghost btn-sm" data-act="back">Back</button>
+      </div>
+    </section>
+
+    <!-- CONFIRMED -->
+    <section id="v-yes" class="hidden">
+      <div class="glyph">🎉</div>
+      <span class="pill">✦ Reserved ✦</span>
+      <h2 class="feature" id="yesTitle" style="margin-top:14px">Thank you</h2>
+      <p class="lead" id="yesLead" style="margin-top:12px"></p>
+      <div class="det" style="margin-top:18px">
+        <div class="r">⏱️ Arrive <span class="g">4:00 PM</span> · Film <span class="g">4:30 PM</span></div>
+        <div class="r">📍 <b>Novo Cinemas · Doha Oasis</b></div>
+      </div>
+      <p class="muted" style="margin-top:18px">Your VIP seats are reserved. It would be our honour to welcome you.</p>
+      <div id="vipPass" class="hidden" style="margin-top:22px">
+        <div style="background:#fff;display:inline-block;padding:14px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.4)"><div id="vipQr"></div></div>
+        <p class="muted" style="margin-top:12px">Show this at the entrance for VIP admission.</p>
+      </div>
+    </section>
+
+    <!-- DECLINED -->
+    <section id="v-no" class="hidden">
+      <div class="glyph">💛</div>
+      <h2 class="feature">With regret</h2>
+      <p class="lead" id="noLead" style="margin-top:12px">Thank you for letting us know. You will be missed — we hope to host you at a future QNB Movie Night.</p>
+      <div class="actions"><button class="btn btn-ghost btn-sm" data-act="reconsider">Actually, I’d love to come</button></div>
+    </section>
+
+    <!-- ERROR -->
+    <section id="v-err" class="hidden">
+      <div class="glyph">📡</div>
+      <h2 class="feature">We hit a snag</h2>
+      <p class="lead" style="margin-top:12px">We couldn’t reach the server. Please try again in a moment.</p>
+      <div class="actions"><button class="btn btn-ghost" data-act="reload">Retry</button></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/invite.js?v=1"></script>
+</body></html>
