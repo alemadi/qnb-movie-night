@@ -10,7 +10,7 @@
     ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY)
     : null;
 
-  var CONFIRM_URL = "https://alemadi.github.io/qnb-movie-night/confirm.html";
+  var CONFIRM_URL = new URL("confirm.html", location.href).href;
   var PIN_KEY = "qnb_pin_v1";
   var pin = "";
   var timer = null;

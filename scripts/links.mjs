@@ -11,7 +11,7 @@
  * never in git). Writes links.csv and prints a short preview.
  *
  *   node scripts/links.mjs                       # all confirmed guests
- *   node scripts/links.mjs --base https://alemadi.github.io/qnb-movie-night
+ *   node scripts/links.mjs --base https://qnbmovienight.netlify.app
  *   node scripts/links.mjs --pending            # only those not yet asked
  *   node scripts/links.mjs --out links.csv
  * ==========================================================================*/
@@ -28,7 +28,7 @@ function flag(name, def) {
   const next = argv[i + 1];
   return next && !next.startsWith("--") ? next : true;
 }
-const BASE = String(flag("base", process.env.PUBLIC_BASE_URL || "https://alemadi.github.io/qnb-movie-night")).replace(/\/$/, "");
+const BASE = String(flag("base", process.env.PUBLIC_BASE_URL || "https://qnbmovienight.netlify.app")).replace(/\/$/, "");
 const OUT = String(flag("out", "links.csv"));
 const PENDING_ONLY = !!flag("pending", false);
 

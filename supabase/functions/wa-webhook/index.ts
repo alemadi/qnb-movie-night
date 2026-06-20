@@ -19,7 +19,7 @@
 //   WA_PHONE_ID       WhatsApp phone number ID
 //   WA_TEMPLATE       template name (default: movie_confirm)
 //   WA_TEMPLATE_LANG  template language code (default: en)
-//   PUBLIC_BASE_URL   e.g. https://alemadi.github.io/qnb-movie-night
+//   PUBLIC_BASE_URL   e.g. https://qnbmovienight.netlify.app
 // (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are injected automatically.)
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";

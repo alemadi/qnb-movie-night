@@ -11,7 +11,7 @@
 | Organizer dashboard | `/admin.html` | Organizers (PIN) |
 | Entrance QR poster (print) | `/poster.html` | Print & post at entrance |
 
-Base: `https://alemadi.github.io/qnb-movie-night`
+Base: `https://qnbmovienight.netlify.app`
 
 ## Headcount
 - **Confirmed:** 76 bookings / **237 seats**

@@ -104,7 +104,7 @@
     var ics = [
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//QNB Movie Night//EN", "CALSCALE:GREGORIAN",
       "BEGIN:VEVENT",
-      "UID:qnb-movie-night-toystory5@alemadi.github.io",
+      "UID:qnb-movie-night-toystory5@qnbmovienight.netlify.app",
       "DTSTAMP:20260619T000000Z",
       "DTSTART:20260620T130000Z",
       "DTEND:20260620T153000Z",

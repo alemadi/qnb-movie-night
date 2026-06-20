@@ -138,7 +138,7 @@ Meta approval needed**. Export the links from the DB:
 
 ```bash
 npm install && cp .env.example .env     # add SUPABASE_SERVICE_ROLE_KEY
-node scripts/links.mjs --base https://alemadi.github.io/qnb-movie-night
+node scripts/links.mjs --base https://qnbmovienight.netlify.app
 # writes links.csv: name, wa_phone, confirm_url, wa_me_link, hall, guest_count
 ```
 
@@ -161,7 +161,7 @@ ticket link / promotes) and `wa-send` (broadcasts the template).
 2. **Secrets** (Dashboard → Edge Functions → Manage secrets):
    `WA_VERIFY_TOKEN`, `WA_APP_SECRET`, `WA_TOKEN`, `WA_PHONE_ID`,
    `WA_TEMPLATE=movie_confirm`, `WA_TEMPLATE_LANG=en`,
-   `PUBLIC_BASE_URL=https://alemadi.github.io/qnb-movie-night`, `WA_SEND_SECRET=<random>`.
+   `PUBLIC_BASE_URL=https://qnbmovienight.netlify.app`, `WA_SEND_SECRET=<random>`.
 3. **Webhook** — Meta → WhatsApp → Configuration → Callback URL
    `https://tomfokjerpwoxgiqtdkd.supabase.co/functions/v1/wa-webhook`,
    Verify Token = your `WA_VERIFY_TOKEN`; subscribe to the `messages` field.
