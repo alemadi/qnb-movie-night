@@ -83,6 +83,8 @@
     var un = $("unassignedNote");
     if (un) un.textContent = (d.unassigned_in > 0) ? ("⚠️ " + d.unassigned_in + " checked-in seat(s) not yet assigned to a hall.") : "";
 
+    updateWalkin(d);
+
     var list = d.promoted_pending || [];
     $("promoCount").textContent = list.length ? "(" + list.length + ")" : "";
     var host = $("promoList"); host.innerHTML = "";
@@ -181,6 +183,29 @@
   }
 
   // ---- walk-in ----
+  // Reflect capacity: block adding once the venue (or chosen hall) is full.
+  function updateWalkin(d) {
+    var capTotal = (d.hall3_cap || 0) + (d.hall4_cap || 0);
+    var total = d.checked_in_heads || 0;
+    var venueFull = capTotal > 0 && total >= capTotal;
+    var h3full = (d.hall3_cap || 0) > 0 && (d.hall3_filled || 0) >= d.hall3_cap;
+    var h4full = (d.hall4_cap || 0) > 0 && (d.hall4_filled || 0) >= d.hall4_cap;
+
+    [].forEach.call(document.querySelectorAll(".hallpick"), function (b) {
+      var h = b.getAttribute("data-wkhall");
+      b.disabled = venueFull || (h === "Hall 3" ? h3full : h4full);
+    });
+    if (venueFull || (walkHall === "Hall 3" && h3full) || (walkHall === "Hall 4" && h4full)) setWalkHall(null);
+
+    var addBtn = document.querySelector('[data-action="addwalkin"]');
+    if (addBtn) addBtn.disabled = venueFull || (h3full && h4full);
+
+    var av = $("wkAvail");
+    if (av) av.innerHTML = venueFull
+      ? '<b style="color:#E2604D">🔴 Venue full — ' + total + '/' + capTotal + ' checked in. Can\'t add more.</b>'
+      : (total + ' / ' + capTotal + ' seats checked in' + (h3full ? ' · Hall 3 full' : '') + (h4full ? ' · Hall 4 full' : '') + '.');
+  }
+
   function setWalkHall(h) {
     walkHall = h;
     [].forEach.call(document.querySelectorAll(".hallpick"), function (b) {
