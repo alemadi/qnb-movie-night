@@ -45,7 +45,7 @@
     $("cfTitle").textContent = first ? ("You're all set, " + first + "!") : "You're all set!";
     var n = g && g.guest_count != null ? g.guest_count : null;
     $("cfLead").innerHTML = (n != null ? ("Your <b>" + n + "</b> seat" + (n > 1 ? "s are" : " is") + " confirmed. ") : "") +
-      "Looking forward to seeing you " + whenWord() + " at <b>4:00 PM</b>.";
+      "Looking forward to seeing you " + whenWord() + "! Please arrive by <b>4:00 PM</b> — the movie starts at <b>4:30 PM</b>.";
     show("confirmed");
     if (window.QNBfx) window.QNBfx.celebrate();
   }

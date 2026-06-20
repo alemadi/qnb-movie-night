@@ -1,6 +1,6 @@
 # QNB Movie Night — Launch Runbook
 
-**Toy Story 5 · Saturday 20 June 2026 · 4:00 PM · Novo Cinemas, Doha Oasis**
+**Toy Story 5 · Saturday 20 June 2026 · Arrive 4:00 PM · Movie 4:30 PM · Novo Cinemas, Doha Oasis**
 
 ## Live pages
 | Page | URL | Used by |
@@ -33,7 +33,7 @@ Base: `https://qnbmovienight.netlify.app`
 2. **Watch `admin.html`:** "Said yes" climbs; "Declined" frees seats.
 3. **Promotions:** when a guest declines, the next fitting waitlister is **auto-promoted** and appears under *"Just promoted — notify them."* Tap **Notify** to send them the confirm link.
 
-## At the gate (from 3:30 PM)
+## At the gate (gate from 3:30 PM · guests arrive 4:00 PM · movie 4:30 PM)
 1. Guest scans the **entrance poster QR** → enters mobile → gets their QR ticket (or already has it from confirming).
 2. Organizer opens `scan.html` (PIN once) and scans the guest's QR:
    - **✅ Admit** → tap **Hall 3** or **Hall 4** to direct them.

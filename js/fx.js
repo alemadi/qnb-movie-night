@@ -91,7 +91,7 @@
     function u(v, l) { return '<div class="cd-unit"><div class="cd-num">' + v + '</div><div class="cd-lbl">' + l + "</div></div>"; }
     function tick() {
       var diff = target - Date.now();
-      if (diff <= 0) { el.innerHTML = '<div class="cd-now">🎬 Now showing</div>'; return; }
+      if (diff <= 0) { el.innerHTML = '<div class="cd-now">🍿 Doors are open</div>'; return; }
       var d = Math.floor(diff / 864e5), h = Math.floor(diff / 36e5) % 24, m = Math.floor(diff / 6e4) % 60;
       el.innerHTML = u(d, "days") + '<div class="cd-sep">:</div>' + u(h, "hrs") + '<div class="cd-sep">:</div>' + u(m, "min");
     }
@@ -110,7 +110,7 @@
       "DTEND:20260620T153000Z",
       "SUMMARY:QNB Movie Night — Toy Story 5",
       "LOCATION:Novo Cinemas, Doha Oasis",
-      "DESCRIPTION:Doors from 3:30 PM. Show your QR ticket at the entrance.",
+      "DESCRIPTION:Please arrive by 4:00 PM. Movie starts 4:30 PM. Show your QR ticket at the entrance.",
       "END:VEVENT", "END:VCALENDAR"
     ].join("\r\n");
     var url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
