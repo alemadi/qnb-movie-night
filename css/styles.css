@@ -269,6 +269,25 @@ a{color:var(--azure);text-decoration:none}
 .promo-row button.promote{width:auto;flex:none;border:none;padding:11px 16px;font-size:13px;border-radius:var(--r-sm);background:var(--azure);color:#04121f;font-weight:700;font-family:var(--font-body);cursor:pointer}
 .promo-row button.promote:disabled{opacity:.6}
 .promo-row button.undo{width:auto;flex:none;border:1px solid var(--line);background:none;color:var(--muted);padding:9px 12px;font-size:12px;border-radius:var(--r-sm);font-family:var(--font-body);cursor:pointer}
+/* hall occupancy */
+.hall-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hallcard{background:rgba(77,141,255,.08);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.hallcard__top{display:flex;justify-content:space-between;align-items:baseline}
+.hallcard__top b{font-family:var(--font-display);font-size:15px;color:#fff}
+.hallcard__top span{font-family:var(--font-mono);font-size:13px;color:#5FE3E0}
+.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:9px 0 6px}
+.bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#3DD0A0,#5FE3E0);transition:width .45s ease}
+.bar i.warn{background:linear-gradient(90deg,#E8843C,#E6C56C)}
+.bar i.full{background:linear-gradient(90deg,#E2604D,#E8843C)}
+.hallcard__sub{font-size:11.5px;color:var(--muted)}
+/* add walk-in */
+.walk-line{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.ministep{display:flex;align-items:center;gap:14px}
+.ministep button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;font-size:22px;line-height:1;cursor:pointer}
+.ministep b{font-family:var(--font-display);font-size:22px;min-width:26px;text-align:center;color:#fff}
+.walk-halls{display:flex;gap:10px;margin-top:10px}
+.hallpick{flex:1;padding:12px;border-radius:var(--r-sm);border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--platinum);font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer}
+.hallpick.sel{border-color:var(--azure);background:rgba(77,141,255,.18);color:#fff}
 
 /* ============================================================
    16. Cinematic motion (fx.js pairs with this)

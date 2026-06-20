@@ -1,6 +1,6 @@
 /* QNB Movie Night — organizer dashboard (admin.html)
-   PIN gate -> live counts + promoted-but-unconfirmed guests (Notify / Undo),
-   plus a manual "Promote from waitlist" panel (organizer chooses who gets a seat).
+   PIN gate -> live counts, per-hall occupancy, promoted (Notify/Undo),
+   manual waitlist promotion, and adding walk-in / non-registered guests.
 */
 (function () {
   "use strict";
@@ -14,8 +14,10 @@
   var PIN_KEY = "qnb_pin_v1";
   var pin = "";
   var timer = null;
-  var waitlist = [];    // full waitlist from list_waitlist
+  var waitlist = [];
   var wlFilter = "";
+  var walkSeats = 1;
+  var walkHall = null;
 
   function $(id) { return document.getElementById(id); }
   function showView(name) {
@@ -23,6 +25,7 @@
     window.scrollTo(0, 0);
   }
   function pinMsg(t, k) { var m = $("pinMsg"); if (!m) return; if (!t) { m.className = "msg"; m.textContent = ""; return; } m.className = "msg show " + (k || "error"); m.textContent = t; }
+  function wkMsg(t, k) { var m = $("wkMsg"); if (!m) return; if (!t) { m.className = "msg"; m.textContent = ""; return; } m.className = "msg show " + (k || "error"); m.textContent = t; }
 
   // ---- PIN gate ----
   function renderDots() { var d = $("pinDots").children; for (var i = 0; i < d.length; i++) d[i].classList.toggle("is-on", i < pin.length); }
@@ -40,7 +43,7 @@
     return "https://wa.me/" + encodeURIComponent(g.wa_phone || "") + "?text=" + encodeURIComponent(msg);
   }
 
-  function row(name, sub) {
+  function rowEl(name, sub) {
     var r = document.createElement("div"); r.className = "promo-row";
     var who = document.createElement("div"); who.className = "who";
     who.innerHTML = "<b></b><small></small>";
@@ -50,22 +53,46 @@
     return r;
   }
 
-  // ---- dashboard counts + promoted list ----
+  // ---- hall occupancy ----
+  function renderHall(prefix, filled, cap) {
+    var txt = $(prefix + "txt"), bar = $(prefix + "bar"), sub = $(prefix + "sub");
+    if (!txt) return;
+    txt.textContent = filled + " / " + cap;
+    var pct = cap > 0 ? Math.min(100, Math.round(filled / cap * 100)) : 0;
+    if (bar) {
+      bar.style.width = pct + "%";
+      bar.classList.toggle("full", filled >= cap && cap > 0);
+      bar.classList.toggle("warn", filled < cap && pct >= 80);
+    }
+    if (sub) {
+      if (cap <= 0) sub.textContent = "";
+      else if (filled < cap) sub.textContent = (cap - filled) + " seat" + (cap - filled !== 1 ? "s" : "") + " free";
+      else if (filled === cap) sub.textContent = "Full";
+      else sub.textContent = "⚠️ over by " + (filled - cap);
+    }
+  }
+
   function render(d) {
     $("sCheckedIn").innerHTML = d.checked_in + ' <small>/ ' + d.checked_in_heads + " seats</small>";
     $("sConfirmed").innerHTML = d.confirmed + ' <small>/ ' + d.confirmed_heads + " seats</small>";
     $("sYes").textContent = d.attending_yes;
     $("sDeclined").textContent = d.declined;
+
+    renderHall("h3", d.hall3_filled || 0, d.hall3_cap || 0);
+    renderHall("h4", d.hall4_filled || 0, d.hall4_cap || 0);
+    var un = $("unassignedNote");
+    if (un) un.textContent = (d.unassigned_in > 0) ? ("⚠️ " + d.unassigned_in + " checked-in seat(s) not yet assigned to a hall.") : "";
+
     var list = d.promoted_pending || [];
     $("promoCount").textContent = list.length ? "(" + list.length + ")" : "";
     var host = $("promoList"); host.innerHTML = "";
     if (!list.length) {
       var e = document.createElement("div"); e.className = "empty-note";
-      e.textContent = "No one promoted yet. Promote guests from the waitlist below.";
+      e.textContent = "No one promoted yet. Promote from the waitlist below.";
       host.appendChild(e);
     } else {
       list.forEach(function (g) {
-        var r = row(g.name, "+" + (g.wa_phone || "—") + " · " + (g.seats || 1) + " seat(s)");
+        var r = rowEl(g.name, "+" + (g.wa_phone || "—") + " · " + (g.seats || 1) + " seat(s)");
         var a = document.createElement("a"); a.className = "notify"; a.textContent = "Notify";
         a.href = notifyLink(g); a.target = "_blank"; a.rel = "noopener";
         var undo = document.createElement("button"); undo.className = "undo"; undo.textContent = "Undo";
@@ -92,7 +119,7 @@
       host.appendChild(e); return;
     }
     rows.slice(0, 60).forEach(function (g) {
-      var r = row(g.name, "+" + (g.wa_phone || "—") + " · " + (g.seats || 1) + " seat(s)");
+      var r = rowEl(g.name, "+" + (g.wa_phone || "—") + " · " + (g.seats || 1) + " seat(s)");
       var btn = document.createElement("button"); btn.className = "promote"; btn.textContent = "Promote";
       btn.setAttribute("data-action", "promote"); btn.setAttribute("data-wa", g.wa_phone || "");
       r.appendChild(btn);
@@ -149,8 +176,34 @@
     try {
       var res = await sb.rpc(fn, { p_pin: pin, p_mobile: wa });
       if (res.error) throw res.error;
-      load(false);   // refresh counts + promoted + waitlist
+      load(false);
     } catch (e) { console.error(e); if (btn) { btn.disabled = false; btn.textContent = "Retry"; } }
+  }
+
+  // ---- walk-in ----
+  function setWalkHall(h) {
+    walkHall = h;
+    [].forEach.call(document.querySelectorAll(".hallpick"), function (b) {
+      b.classList.toggle("sel", b.getAttribute("data-wkhall") === h);
+    });
+  }
+  async function addWalkin(btn) {
+    if (!sb) return;
+    var name = ($("wkName").value || "").trim();
+    if (!name) { wkMsg("Enter the guest's name.", "error"); return; }
+    if (!walkHall) { wkMsg("Pick a hall.", "error"); return; }
+    wkMsg("Adding…", "info");
+    if (btn) btn.disabled = true;
+    try {
+      var res = await sb.rpc("add_walkin", { p_pin: pin, p_name: name, p_seats: walkSeats, p_hall: walkHall });
+      if (res.error) throw res.error;
+      var r = res.data;
+      if (!r || !r.ok) { wkMsg((r && r.reason) ? r.reason : "Couldn't add.", "error"); if (btn) btn.disabled = false; return; }
+      wkMsg("✓ Added " + r.name + " (" + r.seats + " seat" + (r.seats > 1 ? "s" : "") + ") to " + r.hall + ".", "info");
+      $("wkName").value = ""; walkSeats = 1; $("wkSeats").textContent = "1"; setWalkHall(null);
+      load(false);
+    } catch (e) { console.error(e); wkMsg("No connection — try again.", "error"); }
+    if (btn) btn.disabled = false;
   }
 
   function lock() {
@@ -161,12 +214,17 @@
   }
 
   function onClick(e) {
+    var ws = e.target.closest("[data-wstep]");
+    if (ws) { walkSeats = Math.min(Math.max(walkSeats + parseInt(ws.getAttribute("data-wstep"), 10), 1), 20); $("wkSeats").textContent = walkSeats; return; }
+    var wh = e.target.closest("[data-wkhall]");
+    if (wh) { setWalkHall(wh.getAttribute("data-wkhall")); return; }
     var act = e.target.closest("[data-action]"); if (!act) return;
     var a = act.getAttribute("data-action");
     if (a === "refresh") load(false);
     else if (a === "lock") lock();
     else if (a === "promote") rpcThenRefresh("promote_waitlister", act.getAttribute("data-wa"), act);
     else if (a === "unpromote") rpcThenRefresh("unpromote_waitlister", act.getAttribute("data-wa"), act);
+    else if (a === "addwalkin") addWalkin(act);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

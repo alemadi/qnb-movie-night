@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <link rel="stylesheet" href="css/styles.css?v=9" />
 </head>
 <body>
   <div class="app">
@@ -50,7 +50,43 @@
           <div class="stat warn"><div class="num" id="sDeclined">0</div><div class="lbl">Declined</div></div>
         </div>
 
-        <div style="margin-top:8px">
+        <div style="margin-top:10px">
+          <div class="section-h">🎬 Hall occupancy</div>
+          <div class="hall-grid">
+            <div class="hallcard">
+              <div class="hallcard__top"><b>Hall 3</b><span id="h3txt">0 / 141</span></div>
+              <div class="bar"><i id="h3bar"></i></div>
+              <div class="hallcard__sub" id="h3sub">—</div>
+            </div>
+            <div class="hallcard">
+              <div class="hallcard__top"><b>Hall 4</b><span id="h4txt">0 / 114</span></div>
+              <div class="bar"><i id="h4bar"></i></div>
+              <div class="hallcard__sub" id="h4sub">—</div>
+            </div>
+          </div>
+          <p class="muted fs-sm" id="unassignedNote" style="margin-top:6px"></p>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="section-h">➕ Add walk-in / non-registered</div>
+          <input id="wkName" class="wl-search" type="text" autocomplete="off" placeholder="Guest name" />
+          <div class="walk-line">
+            <span class="muted fs-sm">Seats</span>
+            <div class="ministep">
+              <button type="button" data-wstep="-1" aria-label="fewer">−</button>
+              <b id="wkSeats">1</b>
+              <button type="button" data-wstep="1" aria-label="more">+</button>
+            </div>
+          </div>
+          <div class="walk-halls">
+            <button type="button" class="hallpick" data-wkhall="Hall 3">Hall 3</button>
+            <button type="button" class="hallpick" data-wkhall="Hall 4">Hall 4</button>
+          </div>
+          <div id="wkMsg" class="msg"></div>
+          <button class="btn btn--primary btn--sm" data-action="addwalkin" style="margin-top:8px">Add &amp; admit</button>
+        </div>
+
+        <div style="margin-top:14px">
           <div class="section-h">⚡ Just promoted — notify them <span id="promoCount"></span></div>
           <div id="promoList" class="stack"></div>
         </div>
@@ -75,6 +111,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/fx.js?v=3"></script>
-  <script src="js/admin.js?v=2"></script>
+  <script src="js/admin.js?v=3"></script>
 </body>
 </html>
