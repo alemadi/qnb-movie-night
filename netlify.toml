@@ -1,0 +1,5 @@
+# QNB Movie Night is a plain static site (no build step).
+# Serve the repository root exactly as-is.
+[build]
+  command = ""
+  publish = "."
