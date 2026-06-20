@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="stylesheet" href="css/styles.css?v=8" />
 </head>
 <body>
   <div class="app">
@@ -55,6 +55,12 @@
           <div id="promoList" class="stack"></div>
         </div>
 
+        <div style="margin-top:14px">
+          <div class="section-h">➕ Promote from waitlist <span id="availTag" class="avail-tag"></span></div>
+          <input id="wlSearch" class="wl-search" type="search" inputmode="search" autocomplete="off" placeholder="Search name or number…" />
+          <div id="waitList" class="wl-scroll"></div>
+        </div>
+
         <div class="btn-row" style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
           <button class="btn btn--ghost" data-action="refresh">↻ Refresh</button>
           <button class="btn btn--ghost btn--sm" data-action="lock">Lock</button>
@@ -62,13 +68,13 @@
         <p class="muted fs-sm tac" id="lastUpdated" style="margin-top:6px"></p>
       </section>
 
-      <p class="muted fs-sm tac mt-auto" style="padding-top:14px">Waitlist promotions are automatic. Tap “Notify” to send a promoted guest the confirm link.</p>
+      <p class="muted fs-sm tac mt-auto" style="padding-top:14px">When a guest declines, their seat is freed — you choose who to promote from the waitlist. Tap “Notify” to send a promoted guest the confirm link, or “Undo” to reverse it.</p>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/fx.js?v=3"></script>
-  <script src="js/admin.js?v=1"></script>
+  <script src="js/admin.js?v=2"></script>
 </body>
 </html>

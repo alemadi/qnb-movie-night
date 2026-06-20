@@ -261,6 +261,14 @@ a{color:var(--azure);text-decoration:none}
 .promo-row .who small{color:var(--muted);font-size:12px;font-family:var(--font-mono)}
 .promo-row a.notify{width:auto;flex:none;padding:11px 14px;font-size:13px;text-decoration:none;border-radius:var(--r-sm);background:var(--green);color:#06231a;font-weight:700}
 .empty-note{text-align:center;color:var(--muted);font-size:13px;padding:18px;border:1px dashed var(--line);border-radius:var(--r)}
+.wl-search{width:100%;padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--line);background:rgba(255,255,255,.04);color:#fff;font-family:var(--font-body);font-size:14px;margin:8px 0}
+.wl-search::placeholder{color:var(--muted)}
+.wl-search:focus{outline:none;border-color:var(--azure);box-shadow:var(--ring-focus)}
+.wl-scroll{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.avail-tag{font-family:var(--font-mono);font-size:10px;color:#5FE3E0;text-transform:none;letter-spacing:0}
+.promo-row button.promote{width:auto;flex:none;border:none;padding:11px 16px;font-size:13px;border-radius:var(--r-sm);background:var(--azure);color:#04121f;font-weight:700;font-family:var(--font-body);cursor:pointer}
+.promo-row button.promote:disabled{opacity:.6}
+.promo-row button.undo{width:auto;flex:none;border:1px solid var(--line);background:none;color:var(--muted);padding:9px 12px;font-size:12px;border-radius:var(--r-sm);font-family:var(--font-body);cursor:pointer}
 
 /* ============================================================
    16. Cinematic motion (fx.js pairs with this)
